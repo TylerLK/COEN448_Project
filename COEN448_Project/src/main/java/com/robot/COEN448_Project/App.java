@@ -57,7 +57,7 @@ public class App {
     		}
     	}
     	
-    	// Initialize the robots position.
+    	// Initialize the robot's position.
     	robotPositionX = 0;
     	robotPositionY = (n - 1);
     }
