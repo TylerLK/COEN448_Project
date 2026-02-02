@@ -2,7 +2,8 @@ package com.robot.COEN448_Project;
 
 import com.robot.COEN448_Project.enums.*;
 
-/*
+/**
+ * 
  * Robot Class
  * @author Sunil
  * @x The x-axis position of the robot.
@@ -15,7 +16,7 @@ public class Robot {
     private PenOrientation penOrientation;
     private Orientation direction;
     
-    /*
+    /**
      * Robot initial position [0,0] pen up and facing North.
      */
     public Robot() {
@@ -25,42 +26,42 @@ public class Robot {
         this.direction = Orientation.NORTH;
     }
     
-    /*
+    /**
      * @return The x-axis position of the robot.
      */
     public int getX() {
         return x;
     }
     
-    /*
+    /**
      * @return The y-axis position of the robot.
      */
     public int getY() {
         return y;
     }
     
-    /*
+    /**
      * @return The orientation of the robot's pen (UP or DOWN)
      */
     public PenOrientation getPenOrientation() {
         return penOrientation;
     }
     
-    /*
+    /**
      * Puts the robot's pen down.
      */
     public void penDown() {
         this.penOrientation = PenOrientation.DOWN;
     }
 
-    /*
+    /**
      * Lifts the robot's pen up.
      */
     public void penUp() {
         this.penOrientation = PenOrientation.UP;
     }
 
-    /*
+    /**
      * Turns the robot left. Adjusts based on current direction.
      */
     public void turnLeft() {
@@ -80,7 +81,7 @@ public class Robot {
         }
     }
 
-    /*
+    /**
      * Turns the robot right. Adjusts based on current direction.
      */
     public void turnRight() {
@@ -100,7 +101,7 @@ public class Robot {
         }
     }
     
-    /*
+    /**
      * @return The direction the robot is facing.
      */
     public Orientation getDirection() {
@@ -108,7 +109,7 @@ public class Robot {
     }
 
     
-    /*
+    /**
      * Moves the robot in the current direction by the specified number of steps.
      * TODO: needs to be checked for out of bounds conditions if we try to move outside the floor. Maybe throw an exception to reprompt user to enter a new command.
      * @param steps The number of steps to move the robot (must be a non-negative integer).

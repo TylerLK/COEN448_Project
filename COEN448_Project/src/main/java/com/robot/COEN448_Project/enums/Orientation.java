@@ -1,6 +1,6 @@
 package com.robot.COEN448_Project.enums;
 
-/*
+/**
  * Orientation Enum
  * @author Sunil
  * @NORTH The robot is facing North.
