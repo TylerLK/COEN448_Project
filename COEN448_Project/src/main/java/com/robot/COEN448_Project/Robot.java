@@ -121,17 +121,22 @@ public class Robot {
         }
         switch (direction) {
             case NORTH:
-                y -= steps;
+                y += steps;
                 break;
             case EAST:
                 x += steps;
                 break;
             case SOUTH:
-                y += steps;
+                y -= steps;
                 break;
             case WEST:
                 x -= steps;
                 break;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Position: " + x + ", " + y + " - Pen: " + penOrientation + " - Facing: " + direction;
     }
 }
