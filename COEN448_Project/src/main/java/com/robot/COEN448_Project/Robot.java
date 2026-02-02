@@ -113,8 +113,9 @@ public class Robot {
      * Moves the robot in the current direction by the specified number of steps.
      * TODO: needs to be checked for out of bounds conditions if we try to move outside the floor. Maybe throw an exception to reprompt user to enter a new command.
      * @param steps The number of steps to move the robot (must be a non-negative integer).
+     * @throws IllegalArgumentException if steps is negative.
      */
-    public void move(int steps) throws IllegalArgumentException{
+    public void move(int steps){
         if (steps < 0) {
             throw new IllegalArgumentException("Steps must be a non-negative integer.");
         }
