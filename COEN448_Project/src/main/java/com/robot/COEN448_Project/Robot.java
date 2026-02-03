@@ -129,8 +129,8 @@ public class Robot {
      * @set The direction the robot is facing.
      */
     public void setDirection(Orientation direction) {
-        this.direction = direction;
-    }
+		this.direction = direction;
+	}
 
     /**
      * Moves the robot in the current direction by the specified number of steps.

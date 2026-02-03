@@ -3,7 +3,6 @@ package com.robot.COEN448_Project;
 // Importing Pre-Built Libraries
 import java.util.Scanner;
 
-// Importing User-Defined Enumerations
 public class App {
 	// Main application variables. 
 	// Entries represent the individual tiles of the floor that the robot will roam around. "0" = Un-drawn and "1" = Drawn.
@@ -47,12 +46,13 @@ public class App {
     				initialize(Integer.parseInt(commandTokens[1]));
     				break;
     			case "q":
-    				System.out.println("Exiting Program. Goodbye!");
-    				scanner.close();
-    				System.exit(0);
+					System.out.println("Exiting Program. Goodbye!");
+					scanner.close();
+					System.exit(0);
+					break;
     			default:
     				System.out.println("Invalid Command. Please try again.");
-    				break;
+					break;
     		}
     	}
     }
@@ -74,13 +74,6 @@ public class App {
     	// Dynamically create the floor array and robot.
     	floor = new int[n][n];
     	robot = new Robot();
-    	
-    	// Initialize the floor and the status of its tiles.
-    	for (int i = 0; i < n; i++) {
-    		for(int j = 0; j < n; j++) {
-    			floor[i][j] = 0;
-    		}
-    	}
     }
     
 }
