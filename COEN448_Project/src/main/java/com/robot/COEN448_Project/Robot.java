@@ -1,6 +1,8 @@
 package com.robot.COEN448_Project;
 
-import com.robot.COEN448_Project.enums.*;
+//Importing User-Defined Enumerations
+import com.robot.COEN448_Project.enums.Orientation;
+import com.robot.COEN448_Project.enums.PenOrientation;
 
 /**
  * 
@@ -33,6 +35,7 @@ public class Robot {
         return x;
     }
     
+    
     /**
      * @return The y-axis position of the robot.
      */
@@ -40,6 +43,20 @@ public class Robot {
         return y;
     }
     
+    /**
+     * @set The x-axis position of the robot.
+     */
+    public void setX(int x) {
+    	this.x = x;
+    }
+    
+    /**
+     * @set The y-axis position of the robot.
+     */
+    public void setY(int y) {
+    	this.y = y;
+    }
+        
     /**
      * @return The orientation of the robot's pen (UP or DOWN)
      */
@@ -107,8 +124,14 @@ public class Robot {
     public Orientation getDirection() {
         return direction;
     }
-
     
+    /**
+     * @set The direction the robot is facing.
+     */
+    public void setDirection(Orientation direction) {
+		this.direction = direction;
+	}
+
     /**
      * Moves the robot in the current direction by the specified number of steps.
      * TODO: needs to be checked for out of bounds conditions if we try to move outside the floor. Maybe throw an exception to reprompt user to enter a new command.
@@ -138,5 +161,5 @@ public class Robot {
     @Override
     public String toString() {
         return "Position: " + x + ", " + y + " - Pen: " + penOrientation + " - Facing: " + direction;
-    }
+    }	
 }
