@@ -47,12 +47,12 @@ public class App {
     				initialize(Integer.parseInt(commandTokens[1]));
     				break;
     			case "q":
-					System.out.println("Exiting Program. Goodbye!");
-					scanner.close();
-					System.exit(0);
+    				System.out.println("Exiting Program. Goodbye!");
+    				scanner.close();
+    				System.exit(0);
     			default:
     				System.out.println("Invalid Command. Please try again.");
-					break;
+    				break;
     		}
     	}
     }
