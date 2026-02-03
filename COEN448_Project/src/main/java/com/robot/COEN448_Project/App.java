@@ -4,9 +4,6 @@ package com.robot.COEN448_Project;
 import java.util.Scanner;
 
 // Importing User-Defined Enumerations
-import com.robot.COEN448_Project.enums.Orientation;
-import com.robot.COEN448_Project.enums.PenOrientation;
-
 public class App {
 	// Main application variables. 
 	// Entries represent the individual tiles of the floor that the robot will roam around. "0" = Un-drawn and "1" = Drawn.
