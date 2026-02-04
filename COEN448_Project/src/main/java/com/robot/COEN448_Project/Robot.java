@@ -138,13 +138,19 @@ public class Robot {
                 break;
         }
 
-        // Fill in the horizontal path (if there is no movement in the x direction, this will not be executed)
-        for (int i = currentX; i < x; i++) {
-            floor[i][y] = 1;
+        // Fill in the horizontal path (handles movement in both positive and negative x directions)
+        if (currentX != x) {
+            int stepX = (x > currentX) ? 1 : -1;
+            for (int i = currentX; i != x; i += stepX) {
+                floor[i][currentY] = 1;
+            }
         }
-        // Fill in the vertical path (if there is no movement in the y direction, this will not be executed)
-        for (int i = currentY; i < y; i++) {
-            floor[x][i] = 1;
+        // Fill in the vertical path (handles movement in both positive and negative y directions)
+        if (currentY != y) {
+            int stepY = (y > currentY) ? 1 : -1;
+            for (int i = currentY; i != y; i += stepY) {
+                floor[currentX][i] = 1;
+            }
         }
     }
 
