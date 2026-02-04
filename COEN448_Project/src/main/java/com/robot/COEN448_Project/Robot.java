@@ -117,10 +117,12 @@ public class Robot {
      * @param steps The number of steps to move the robot (must be a non-negative integer).
      * @throws IllegalArgumentException if steps is negative.
      */
-    public void move(int steps){
+    public void move(int steps, int[][] floor){
         if (steps < 0) {
             throw new IllegalArgumentException("Steps must be a non-negative integer.");
         }
+        int currentX = x;
+        int currentY = y;
         switch (direction) {
             case NORTH:
                 y += steps;
@@ -134,6 +136,21 @@ public class Robot {
             case WEST:
                 x -= steps;
                 break;
+        }
+
+        // Fill in the horizontal path (handles movement in both positive and negative x directions)
+        if (currentX != x) {
+            int stepX = (x > currentX) ? 1 : -1;
+            for (int i = currentX; i != x; i += stepX) {
+                floor[i][currentY] = 1;
+            }
+        }
+        // Fill in the vertical path (handles movement in both positive and negative y directions)
+        if (currentY != y) {
+            int stepY = (y > currentY) ? 1 : -1;
+            for (int i = currentY; i != y; i += stepY) {
+                floor[currentX][i] = 1;
+            }
         }
     }
 

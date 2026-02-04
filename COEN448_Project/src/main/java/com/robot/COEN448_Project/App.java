@@ -56,7 +56,7 @@ public class App {
 				robot.turnLeft();
 				break;
 			case "m":
-				robot.move(Integer.parseInt(commandTokens[1]));
+				robot.move(Integer.parseInt(commandTokens[1]), floor);
 				break;
 			case "p":
 				print();
