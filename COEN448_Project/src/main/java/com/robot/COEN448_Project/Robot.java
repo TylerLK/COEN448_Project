@@ -42,20 +42,6 @@ public class Robot {
     public int getY() {
         return y;
     }
-    
-    /**
-     * @set The x-axis position of the robot.
-     */
-    public void setX(int x) {
-    	this.x = x;
-    }
-    
-    /**
-     * @set The y-axis position of the robot.
-     */
-    public void setY(int y) {
-    	this.y = y;
-    }
         
     /**
      * @return The orientation of the robot's pen (UP or DOWN)
@@ -124,13 +110,6 @@ public class Robot {
     public Orientation getDirection() {
         return direction;
     }
-    
-    /**
-     * @set The direction the robot is facing.
-     */
-    public void setDirection(Orientation direction) {
-		this.direction = direction;
-	}
 
     /**
      * Moves the robot in the current direction by the specified number of steps.
