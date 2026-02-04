@@ -17,7 +17,7 @@ public class App {
 	// Boolean value to check if the user has quit the program.
 	private static boolean isRunning = true;
 
-	// Queue to keep track of the history of commands inputed by the user.
+	// Queue to keep track of the history of commands inputted by the user.
 	private static Queue<String> commandHistory;
 
 	public static void main(String[] args) {
@@ -51,7 +51,6 @@ public class App {
 		scanner.close();
 	}
 
-	// TODO: Implement a function to draw the user's menu.
 
 	// Program Functions
 
