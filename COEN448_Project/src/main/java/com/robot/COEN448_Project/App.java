@@ -43,39 +43,39 @@ public class App {
 			String caseBlindCommand = commandTokens[0].toLowerCase();
 
 			switch (caseBlindCommand) {
-			case "u":
-				robot.penUp();
-				break;
-			case "d":
-				robot.penDown();
-				break;
-			case "r":
-				robot.turnRight();
-				break;
-			case "l":
-				robot.turnLeft();
-				break;
-			case "m":
-				robot.move(Integer.parseInt(commandTokens[1]), floor);
-				break;
-			case "p":
-				print();
-				break;
-			case "c":
-				System.out.println(robot);
-				break;
-			case "q":
-				quit();
-				break;
-			case "i":
-				initialize(Integer.parseInt(commandTokens[1]));
-				break;
-			case "h":
-				history();
-				break;
-			default:
-				System.out.println("Invalid Command. Please try again.");
-				break;
+				case "u":
+					robot.penUp();
+					break;
+				case "d":
+					robot.penDown();
+					break;
+				case "r":
+					robot.turnRight();
+					break;
+				case "l":
+					robot.turnLeft();
+					break;
+				case "m":
+					robot.move(Integer.parseInt(commandTokens[1]), floor);
+					break;
+				case "p":
+					print();
+					break;
+				case "c":
+					System.out.println(robot);
+					break;
+				case "q":
+					quit();
+					break;
+				case "i":
+					initialize(Integer.parseInt(commandTokens[1]));
+					break;
+				case "h":
+					history();
+					break;
+				default:
+					System.out.println("Invalid Command. Please try again.");
+					break;
 			}
 		}
 		scanner.close();
@@ -85,13 +85,33 @@ public class App {
 	// TODO: Implement a function to draw the user's menu.
 
 	// Program Functions
-	// [P|p] ==> Print the N X N array (i.e., Floor).
+
+	/**
+	 * Prints the floor (2D array) to the console.
+	 * [P|p] ==> Print the N X N array (i.e., Floor).
+	 */
 	public static void print() {
-		/*
-		 * for (int i = 0; i < floor.length; i++) { for (int j = 0; j < floor.length;
-		 * j++) { System.out.print(floor[i][j]); } System.out.println(); }
-		 */
-		System.out.println("Print function called.");
+		System.out.println();
+		// flip the rows to print the floor correctly.
+		for (int j = floor.length - 1; j >= 0; j--) {
+			System.out.println();
+			System.out.print(j + " ");
+			for (int i = 0; i < floor.length; i++) {
+				if (floor[i][j] == 0) {
+					System.out.print("   ");
+				} else {
+					System.out.print("  *  ");
+				}
+			}
+
+			System.out.println();
+		}
+
+		System.out.print("  ");
+		for (int i = 0; i < floor.length; i++) {
+			System.out.print("  " + i + "  ");
+		}
+		System.out.println();
 	}
 
 	// [Q|q] ==> Stop the Program.
@@ -106,7 +126,7 @@ public class App {
 		floor = new int[n][n];
 		robot = new Robot();
 	}
-	
+
 	// [H|h] ==> Replay all the steps in the history since the last program start.
 	public static void history() {
 		System.out.println("History function called.");
