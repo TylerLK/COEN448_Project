@@ -1,15 +1,15 @@
 package com.robot.COEN448_Project;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import com.robot.COEN448_Project.enums.Orientation;
@@ -55,6 +55,9 @@ public class AppTest {
         assertEquals(1, floor[0][2]);
     }
 
+   
+
+
     @Test
     public void executeCommandPenUpAndDownAffectsRobot() {
         resetAppState(3);
@@ -91,6 +94,47 @@ public class AppTest {
     }
 
     @Test
+    public void executeCommandTrimsInputAndAcceptsUppercase() {
+        resetAppState(3);
+
+        App.executeCommand("  d  ", true);
+        App.executeCommand("  M 1  ", true);
+
+        Robot robot = getRobot();
+        assertEquals(0, robot.getX());
+        assertEquals(1, robot.getY());
+        assertEquals(2, countMarks(getFloor()));
+    }
+
+    @Test
+    public void executeCommandInvalidCommandPrintsMessage() {
+        resetAppState(3);
+
+        String output = captureStdout(() -> App.executeCommand("x", true));
+        assertTrue(output.contains("Invalid Command. Please try again."));
+
+        Robot robot = getRobot();
+        assertEquals(0, robot.getX());
+        assertEquals(0, robot.getY());
+        assertEquals(PenOrientation.UP, robot.getPenOrientation());
+        assertEquals(Orientation.NORTH, robot.getDirection());
+    }
+
+    @Test
+    public void executeCommandMissingMoveArgumentThrows() {
+        resetAppState(3);
+
+        assertThrows(ArrayIndexOutOfBoundsException.class, () -> App.executeCommand("m", true));
+    }
+
+    @Test
+    public void executeCommandNonNumericMoveArgumentThrows() {
+        resetAppState(3);
+
+        assertThrows(NumberFormatException.class, () -> App.executeCommand("m x", true));
+    }
+
+    @Test
     public void executeCommandPrintsRobotState() {
         resetAppState(3);
         App.executeCommand("d", true);
@@ -109,8 +153,16 @@ public class AppTest {
         String output = captureStdout(() -> App.executeCommand("p", true));
         long starCount = output.chars().filter(ch -> ch == '*').count();
         assertEquals(2L, starCount);
-        assertTrue(output.contains("  0  "));
-        assertTrue(output.contains("  1  "));
+        String[] lines = output.split("\\R");
+        String lastLine = "";
+        for (int i = lines.length - 1; i >= 0; i--) {
+            if (!lines[i].trim().isEmpty()) {
+                lastLine = lines[i];
+                break;
+            }
+        }
+        assertTrue(lastLine.contains("0"));
+        assertTrue(lastLine.contains("1"));
     }
 
     @Test
