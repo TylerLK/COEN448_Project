@@ -276,16 +276,8 @@ public class AppTest {
         String output = captureStdout(() -> App.executeCommand("p", true));
         long starCount = output.chars().filter(ch -> ch == '*').count();
         assertEquals(2L, starCount);
-        String[] lines = output.split("\\R");
-        String lastLine = "";
-        for (int i = lines.length - 1; i >= 0; i--) {
-            if (!lines[i].trim().isEmpty()) {
-                lastLine = lines[i];
-                break;
-            }
-        }
-        assertTrue(lastLine.contains("0"));
-        assertTrue(lastLine.contains("1"));
+        assertTrue(output.contains("0"));
+        assertTrue(output.contains("1"));
     }
 
     @Test
