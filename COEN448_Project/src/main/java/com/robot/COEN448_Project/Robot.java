@@ -124,49 +124,61 @@ public class Robot {
         if (steps < 0) {
             throw new IllegalArgumentException("Steps must be a non-negative integer.");
         }
-        if (x + steps >= floor.length || y + steps >= floor.length) {
-            throw new ArrayIndexOutOfBoundsException("The robot tried to move outside the floor.");
-        }
+
         int oldX = x;
         int oldY = y;
+        int newX = x + steps;
+        int newY = y + steps;
         switch (direction) {
             case NORTH:
-                y += steps;
+                if (newY >= floor.length) {
+                    throw new ArrayIndexOutOfBoundsException("The robot tried to move outside the floor.");
+                }
+                this.y = newY;
                 break;
             case EAST:
-                x += steps;
+                if (newX >= floor.length) {
+                    throw new ArrayIndexOutOfBoundsException("The robot tried to move outside the floor.");
+                }
+                this.x = newX;
                 break;
             case SOUTH:
-                y -= steps;
+                if (newY < 0) {
+                    throw new ArrayIndexOutOfBoundsException("The robot tried to move outside the floor.");
+                }
+                this.y = newY;
                 break;
             case WEST:
-                x -= steps;
+                if (newX < 0) {
+                    throw new ArrayIndexOutOfBoundsException("The robot tried to move outside the floor.");
+                }
+                this.x = newX;
                 break;
         }
 
         if (penOrientation == PenOrientation.DOWN) {
             // Fill in the horizontal path (handles movement in both positive and negative x
             // directions)
-            if (oldX != x) {
-                if (oldX > x) {
-                    for (int i = oldX; i >= x; i--) {
+            if (oldX != this.x) {
+                if (oldX > this.x) {
+                    for (int i = oldX; i >= this.x; i--) {
                         floor[i][oldY] = 1;
                     }
                 } else {
-                    for (int i = oldX; i <= x; i++) {
+                    for (int i = oldX; i <= this.x; i++) {
                         floor[i][oldY] = 1;
                     }
                 }
             }
             // Fill in the vertical path (handles movement in both positive and negative y
             // directions)
-            if (oldY != y) {
-                if (oldY > y) {
-                    for (int i = oldY; i >= y; i--) {
+            if (oldY != this.y) {
+                if (oldY > this.y) {
+                    for (int i = oldY; i >= this.y; i--) {
                         floor[oldX][i] = 1;
                     }
                 } else {
-                    for (int i = oldY; i <= y; i++) {
+                    for (int i = oldY; i <= this.y; i++) {
                         floor[oldX][i] = 1;
                     }
                 }
