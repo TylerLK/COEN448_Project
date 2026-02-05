@@ -56,7 +56,7 @@ public class AppTest {
     }
 
     @Test
-    void moveWithNegativeSteps_throwsIllegalArgumentException() {
+    void moveWithNegativeStepsThrowsIllegalArgumentException() {
         int[][] floor = new int[5][5];
         Robot robot = new Robot();
 
