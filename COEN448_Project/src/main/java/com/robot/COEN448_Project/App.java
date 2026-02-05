@@ -230,10 +230,6 @@ public class App {
 		}
 
 		String[] commandTokens = command.trim().split(" ");
-		if (commandTokens.length == 0) {
-			System.out.println("Invalid Command. Too few arguments for this command.");
-			return false;
-		}
 
 		if (commandTokens.length > 2) {
 			System.out.println("Invalid Command. Too many arguments for this command.");
