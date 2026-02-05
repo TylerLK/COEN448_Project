@@ -55,7 +55,40 @@ public class AppTest {
         assertEquals(1, floor[0][2]);
     }
 
-   
+       @Test
+    void moveWithNegativeSteps_throwsIllegalArgumentException() {
+        int[][] floor = new int[5][5];
+        Robot robot = new Robot();
+
+        IllegalArgumentException ex = assertThrows(
+            IllegalArgumentException.class,
+            () -> robot.move(-1, floor),
+            "Negative steps should throw IllegalArgumentException"
+        );
+
+        assertEquals(
+            "Steps must be a non-negative integer.",
+            ex.getMessage()
+        );
+    }
+
+    @Test
+void moveOutsideGrid_throwsArrayIndexOutOfBoundsException_withCorrectMessage() {
+    int[][] floor = new int[2][2];
+    Robot robot = new Robot();
+
+    robot.penDown();
+
+    ArrayIndexOutOfBoundsException ex = assertThrows(
+        ArrayIndexOutOfBoundsException.class,
+        () -> robot.move(5, floor)
+    );
+
+    assertEquals(
+        "The robot tried to move outside the floor.",
+        ex.getMessage()
+    );
+}
 
 
     @Test
