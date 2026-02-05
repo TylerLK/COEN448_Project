@@ -127,6 +127,13 @@ void moveOutsideGrid_throwsArrayIndexOutOfBoundsException_withCorrectMessage() {
     }
 
     @Test
+    public void executeCommandNegativeMoveThrowsIllegalArgumentException() {
+        resetAppState(3);
+
+        assertThrows(IllegalArgumentException.class, () -> App.executeCommand("m -1", true));
+    }
+
+    @Test
     public void executeCommandTrimsInputAndAcceptsUppercase() {
         resetAppState(3);
 
@@ -165,6 +172,38 @@ void moveOutsideGrid_throwsArrayIndexOutOfBoundsException_withCorrectMessage() {
         resetAppState(3);
 
         assertThrows(NumberFormatException.class, () -> App.executeCommand("m x", true));
+    }
+
+    @Test
+    public void executeCommandNonNumericInitArgumentThrows() {
+        resetAppState(3);
+
+        assertThrows(NumberFormatException.class, () -> App.executeCommand("i x", true));
+    }
+
+    @Test
+    public void executeCommandNegativeInitArgumentThrows() {
+        resetAppState(3);
+
+        assertThrows(NegativeArraySizeException.class, () -> App.executeCommand("i -1", true));
+    }
+
+    @Test
+    public void executeCommandZeroInitCreatesEmptyFloorAndResetsRobot() {
+        resetAppState(3);
+        App.executeCommand("d", true);
+        App.executeCommand("m 1", true);
+
+        App.executeCommand("i 0", true);
+
+        int[][] floor = getFloor();
+        assertEquals(0, floor.length);
+
+        Robot robot = getRobot();
+        assertEquals(0, robot.getX());
+        assertEquals(0, robot.getY());
+        assertEquals(PenOrientation.UP, robot.getPenOrientation());
+        assertEquals(Orientation.NORTH, robot.getDirection());
     }
 
     @Test
@@ -263,6 +302,15 @@ void moveOutsideGrid_throwsArrayIndexOutOfBoundsException_withCorrectMessage() {
         assertEquals(0, robot.getY());
         assertEquals(Orientation.SOUTH, robot.getDirection());
         assertEquals(PenOrientation.DOWN, robot.getPenOrientation());
+    }
+
+    @Test
+    public void historyWhenEmptyStillPrintsMessage() {
+        resetAppState(3);
+
+        String output = captureStdout(() -> App.executeCommand("h", true));
+        assertTrue(output.contains("End of Command History."));
+        assertEquals(0, getHistory().size());
     }
 
     private static void resetAppState(int size) {

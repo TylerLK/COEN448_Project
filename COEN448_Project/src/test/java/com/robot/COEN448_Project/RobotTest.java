@@ -114,6 +114,18 @@ public class RobotTest {
         assertEquals(0, countMarks(floor));
     }
 
+    @Test
+    public void moveBeyondGridWithPenUpDoesNotThrowAndUpdatesPosition() {
+        int[][] floor = new int[2][2];
+        Robot robot = new Robot();
+
+        robot.move(3, floor);
+
+        assertEquals(0, robot.getX());
+        assertEquals(3, robot.getY());
+        assertEquals(0, countMarks(floor));
+    }
+
 
 
     private static int countMarks(int[][] floor) {
