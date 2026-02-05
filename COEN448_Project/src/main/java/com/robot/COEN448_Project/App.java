@@ -222,7 +222,7 @@ public class App {
 		}
 	}
 
-	private static boolean isValidCommand(String command) {
+	public static boolean isValidCommand(String command) {
 		// Check if the command is empty.
 		if (command == null || command.trim().isEmpty()) {
 			System.out.println("Empty Command. Please try again.");
@@ -290,8 +290,10 @@ public class App {
 					System.out.println("Invalid Command. The size must be a positive integer.");
 					return false;
 				}
+			default:
+				System.out.println("Invalid Command. Please try again.");
+				return false;
 		}
-		return true;
 	}
 
 }
