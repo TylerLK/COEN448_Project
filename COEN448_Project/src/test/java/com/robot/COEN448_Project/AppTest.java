@@ -90,7 +90,6 @@ public class AppTest {
         );
     }
 
-
     @Test
     public void executeCommandPenUpAndDownAffectsRobot() {
         resetAppState(3);
