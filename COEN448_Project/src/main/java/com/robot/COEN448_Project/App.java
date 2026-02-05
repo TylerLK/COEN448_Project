@@ -6,6 +6,9 @@ import java.util.Queue;
 import java.util.ArrayDeque;
 
 public class App {
+	// Boolean to control whether or not the menu should be printed during runtime.
+	private final static boolean SHOULD_PRINT_MENU = false;
+
 	// Main application variables.
 	// Entries represent the individual tiles of the floor that the robot will roam
 	// around. "0" = Un-drawn and "1" = Drawn.
@@ -25,11 +28,22 @@ public class App {
 		Scanner scanner = new Scanner(System.in);
 
 		// Request initial floor size from user.
-		System.out.println("Please enter the size you would like the floor to be (N x N): ");
-		int floorSize = scanner.nextInt();
+		int floorSize;
+		while (true) {
+			System.out.println("Please enter the size you would like the floor to be (N x N): ");
+			String input = scanner.nextLine().trim();
 
-		// Clear the newline created by nextInt().
-		scanner.nextLine();
+			try {
+				floorSize = Integer.parseInt(input);
+				if (floorSize > 0) {
+					break;
+				} else {
+					System.out.println("Invalid input. N must be an integer greater than 0.");
+				}
+			} catch (NumberFormatException e) {
+				System.out.println("Invalid input. Please enter a whole number (e.g., 5).");
+			}
+		}
 
 		// Create the initial floor state based on user input.
 		initialize(floorSize);
@@ -38,19 +52,20 @@ public class App {
 		// Enter a continuous loop so long as the user does not choose to quit the
 		// program.
 		while (isRunning) {
-			//Print the menu for the user.
-			printMenu();
-			
+			// Print the menu for the user.
+			if (SHOULD_PRINT_MENU) {
+				printMenu();
+			}
+
 			// Take the user's command input.
 			System.out.println("Enter command: ");
 			String command = scanner.nextLine();
-			
+
 			// Execute the user's desired command.
 			executeCommand(command, true);
 		}
 		scanner.close();
 	}
-
 
 	// Program Functions
 
@@ -60,18 +75,18 @@ public class App {
 	 */
 	public static void print() {
 		System.out.println();
-		
+
 		// Create spacing dynamically based on the size of the floor.
 		int maxDigits = String.valueOf(floor.length - 1).length();
 		String format = "%" + (maxDigits + 3) + "s";
-		
+
 		// Flip the rows to print the floor correctly.
 		for (int j = floor.length - 1; j >= 0; j--) {
 			System.out.println();
-			
+
 			// Format the row with a dynamic width.
 			System.out.printf("%" + maxDigits + "d ", j);
-			
+
 			// Print out the floor tiles with the dynamic spacing.
 			for (int i = 0; i < floor.length; i++) {
 				if (floor[i][j] == 0) {
@@ -103,7 +118,7 @@ public class App {
 		// Dynamically create the floor array, robot, and history queue.
 		floor = new int[n][n];
 		robot = new Robot();
-		if(commandHistory == null) {
+		if (commandHistory == null) {
 			commandHistory = new ArrayDeque<String>();
 		}
 	}
@@ -119,7 +134,7 @@ public class App {
 
 			// Execute the retrieved command.
 			executeCommand(command, false);
-			
+
 			// Restore the retrieved command.
 			commandHistory.add(command);
 		}
@@ -127,32 +142,37 @@ public class App {
 		// Notify user of command completion.
 		System.out.println("End of Command History.");
 	}
-	
+
 	// Utility Functions
 	// Print a menu for the user.
 	public static void printMenu() {
 		System.out.println("\nAvailable Commands:");
-        System.out.println("[U|u]      |  Pen Up");
-        System.out.println("[D|d]      |  Pen Down");
-        System.out.println("[R|r]      |  Turn Right");
-        System.out.println("[L|l]      |  Turn Left");
-        System.out.println("[M s|m s]  |  Move Forward s Spaces (s = Non-negative Integer)");
-        System.out.println("[P|p]      |  Print the Floor");
-        System.out.println("[C|c]      |  Print the Robot's Current Position and Direction");
-        System.out.println("[I n|i n]  |  Initialize the System with a New Floor of Size n x n (n = Positive Integer)");
-        System.out.println("[H|h]      |  Replay Command History");
-        System.out.println("[Q|q]      |  Stop the Program\n");
+		System.out.println("[U|u]      |  Pen Up");
+		System.out.println("[D|d]      |  Pen Down");
+		System.out.println("[R|r]      |  Turn Right");
+		System.out.println("[L|l]      |  Turn Left");
+		System.out.println("[M s|m s]  |  Move Forward s Spaces (s = Non-negative Integer)");
+		System.out.println("[P|p]      |  Print the Floor");
+		System.out.println("[C|c]      |  Print the Robot's Current Position and Direction");
+		System.out.println("[I n|i n]  |  Initialize the System with a New Floor of Size n x n (n = Positive Integer)");
+		System.out.println("[H|h]      |  Replay Command History");
+		System.out.println("[Q|q]      |  Stop the Program\n");
 	}
 
 	// Execute a given command.
 	public static void executeCommand(String command, boolean addToHistory) {
+		if (!isValidCommand(command)) {
+			return;
+		}
+
 		// Parse the user's command into tokens.
 		String[] commandTokens = command.trim().split(" ");
 
 		// Ensure that the command is case blind.
 		String caseBlindCommand = commandTokens[0].toLowerCase();
-		
-		// Ensure that the quit() and history() commands are not added to the command history.
+
+		// Ensure that the quit() and history() commands are not added to the command
+		// history.
 		boolean shouldAddToHistory = addToHistory && !caseBlindCommand.equals("q") && !caseBlindCommand.equals("h");
 		if (shouldAddToHistory) {
 			commandHistory.add(command);
@@ -194,6 +214,82 @@ public class App {
 				System.out.println("Invalid Command. Please try again.");
 				break;
 		}
+	}
+
+	private static boolean isValidCommand(String command) {
+		// Check if the command is empty.
+		if (command == null || command.trim().isEmpty()) {
+			System.out.println("Empty Command. Please try again.");
+			return false;
+		}
+
+		String[] commandTokens = command.trim().split(" ");
+		if (commandTokens.length == 0) {
+			System.out.println("Invalid Command. Too few arguments for this command.");
+			return false;
+		}
+
+		if (commandTokens.length > 2) {
+			System.out.println("Invalid Command. Too many arguments for this command.");
+			return false;
+		}
+
+		String caseBlindCommand = commandTokens[0].toLowerCase();
+
+		// We check single commands, then commands with arguments.
+		switch (caseBlindCommand) {
+			case "u":
+			case "d":
+			case "r":
+			case "l":
+			case "p":
+			case "c":
+			case "q":
+			case "h":
+				if (commandTokens.length == 1) {
+					return true;
+				} else {
+					System.out.println("Invalid Command. Too many arguments for this command.");
+					return false;
+				}
+
+			case "m":
+				if (commandTokens.length != 2) {
+					System.out.println("Invalid Command. Incorrect number of arguments for this command.");
+					return false;
+				}
+				try {
+					int s = Integer.parseInt(commandTokens[1]);
+					if (s >= 0) {
+						return true;
+					} else {
+						System.out.println("Invalid Command. The distance must be a non-negative integer.");
+						return false;
+					}
+				} catch (NumberFormatException e) {
+					System.out.println("Invalid Command. The distance must be a non-negative integer.");
+					return false;
+				}
+
+			case "i":
+				if (commandTokens.length != 2) {
+					System.out.println("Invalid Command. Incorrect number of arguments for this command.");
+					return false;
+				}
+				try {
+					int n = Integer.parseInt(commandTokens[1]);
+					if (n > 0) {
+						return true;
+					} else {
+						System.out.println("Invalid Command. The size must be a positive integer.");
+						return false;
+					}
+				} catch (NumberFormatException e) {
+					System.out.println("Invalid Command. The size must be a positive integer.");
+					return false;
+				}
+		}
+		return true;
 	}
 
 }
