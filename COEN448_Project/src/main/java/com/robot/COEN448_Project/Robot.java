@@ -113,18 +113,19 @@ public class Robot {
 
     /**
      * Moves the robot in the current direction by the specified number of steps.
-     * TODO: needs to be checked for out of bounds conditions if we try to move
-     * outside the floor. Maybe throw an exception to reprompt user to enter a new
-     * command.
      * 
      * @param steps The number of steps to move the robot (must be a non-negative
      *              integer).
      * @param floor The floor (2D array) to move the robot on.
-     * @throws IllegalArgumentException if steps is negative.
+     * @throws IllegalArgumentException       if steps is negative.
+     * @throws ArrayIndexOutOfBoundsException if the robot moves outside the floor.
      */
     public void move(int steps, int[][] floor) {
         if (steps < 0) {
             throw new IllegalArgumentException("Steps must be a non-negative integer.");
+        }
+        if (x + steps >= floor.length || y + steps >= floor.length) {
+            throw new ArrayIndexOutOfBoundsException("The robot tried to move outside the floor.");
         }
         int oldX = x;
         int oldY = y;

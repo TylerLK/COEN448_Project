@@ -7,7 +7,7 @@ import java.util.ArrayDeque;
 
 public class App {
 	// Boolean to control whether or not the menu should be printed during runtime.
-	private final static boolean SHOULD_PRINT_MENU = false;
+	private final static boolean SHOULD_PRINT_MENU = true;
 
 	// Main application variables.
 	// Entries represent the individual tiles of the floor that the robot will roam
@@ -193,7 +193,13 @@ public class App {
 				robot.turnLeft();
 				break;
 			case "m":
-				robot.move(Integer.parseInt(commandTokens[1]), floor);
+				try {
+					robot.move(Integer.parseInt(commandTokens[1]), floor);
+				} catch (IllegalArgumentException e) {
+					System.out.println(e.getMessage());
+				} catch (ArrayIndexOutOfBoundsException e) {
+					System.out.println(e.getMessage());
+				}
 				break;
 			case "p":
 				print();
