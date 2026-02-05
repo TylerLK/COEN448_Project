@@ -1,8 +1,6 @@
 package com.robot.COEN448_Project;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import org.junit.jupiter.api.Test;
 
 import com.robot.COEN448_Project.enums.Orientation;
@@ -117,11 +115,15 @@ public class RobotTest {
     }
 
     @Test
-    public void moveNegativeStepsThrows() {
+    public void moveBeyondGridWithPenUpDoesNotThrowAndUpdatesPosition() {
         int[][] floor = new int[2][2];
         Robot robot = new Robot();
 
-        assertThrows(IllegalArgumentException.class, () -> robot.move(-1, floor));
+        robot.move(3, floor);
+
+        assertEquals(0, robot.getX());
+        assertEquals(3, robot.getY());
+        assertEquals(0, countMarks(floor));
     }
 
     private static int countMarks(int[][] floor) {
