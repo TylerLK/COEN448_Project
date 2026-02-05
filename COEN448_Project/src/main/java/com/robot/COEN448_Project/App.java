@@ -60,24 +60,34 @@ public class App {
 	 */
 	public static void print() {
 		System.out.println();
-		// flip the rows to print the floor correctly.
+		
+		// Create spacing dynamically based on the size of the floor.
+		int maxDigits = String.valueOf(floor.length - 1).length();
+		String format = "%" + (maxDigits + 3) + "s";
+		
+		// Flip the rows to print the floor correctly.
 		for (int j = floor.length - 1; j >= 0; j--) {
 			System.out.println();
-			System.out.print(j + " ");
+			
+			// Format the row with a dynamic width.
+			System.out.printf("%" + maxDigits + "d ", j);
+			
+			// Print out the floor tiles with the dynamic spacing.
 			for (int i = 0; i < floor.length; i++) {
 				if (floor[i][j] == 0) {
-					System.out.print("     ");
+					System.out.printf(format, " ");
 				} else {
-					System.out.print("  *  ");
+					System.out.printf(format, "*");
 				}
 			}
 
 			System.out.println();
 		}
 
-		System.out.print("  ");
+		// Print the bottom index with dynamic spacing.
+		System.out.print(String.format("%" + maxDigits + "s", " ") + " ");
 		for (int i = 0; i < floor.length; i++) {
-			System.out.print("  " + i + "  ");
+			System.out.printf(format, i);
 		}
 		System.out.println();
 	}
@@ -100,22 +110,21 @@ public class App {
 
 	// [H|h] ==> Replay all the steps in the history since the last program start.
 	public static void history() {
-		// Initialize a temporary queue to hold already printed history commands.
-		Queue<String> tempQueue = new ArrayDeque<String>();
+		// Define the number of recorded commands in the command history.
+		int historySize = commandHistory.size();
 
-		while (!commandHistory.isEmpty()) {
+		for (int i = 0; i < historySize; i++) {
 			// Retrieve the next command from the command history.
-			String tempCommand = commandHistory.poll();
-
-			// Store the retrieved command into a temporary queue.
-			tempQueue.add(tempCommand);
+			String command = commandHistory.poll();
 
 			// Execute the retrieved command.
-			executeCommand(tempCommand, false);
+			executeCommand(command, false);
+			
+			// Restore the retrieved command.
+			commandHistory.add(command);
 		}
 
-		// Restore the original command history and notify user of command completion.
-		commandHistory = tempQueue;
+		// Notify user of command completion.
 		System.out.println("End of Command History.");
 	}
 	
@@ -123,16 +132,16 @@ public class App {
 	// Print a menu for the user.
 	public static void printMenu() {
 		System.out.println("\nAvailable Commands:");
-		System.out.println("[U|u] ==> Pen Up");
-		System.out.println("[D|d] ==> Pen Down");
-		System.out.println("[R|r] ==> Turn Right");
-		System.out.println("[L|l] ==> Turn Left");
-		System.out.println("[M s|m s] ==> Move Forward s Spaces (s = Non-negative Integer)");
-		System.out.println("[P|p] ==> Print the Floor");
-		System.out.println("[C|c] ==> Print the Robot's Current Position and Direction");
-		System.out.println("[I n|i n] ==> Initialize the System with a New Floor of Size n x n (n = Positive Integer)");
-		System.out.println("[H|h] ==> Replay Command History");
-		System.out.println("[Q|q] ==> Stop the Program\n");
+        System.out.println("[U|u]      |  Pen Up");
+        System.out.println("[D|d]      |  Pen Down");
+        System.out.println("[R|r]      |  Turn Right");
+        System.out.println("[L|l]      |  Turn Left");
+        System.out.println("[M s|m s]  |  Move Forward s Spaces (s = Non-negative Integer)");
+        System.out.println("[P|p]      |  Print the Floor");
+        System.out.println("[C|c]      |  Print the Robot's Current Position and Direction");
+        System.out.println("[I n|i n]  |  Initialize the System with a New Floor of Size n x n (n = Positive Integer)");
+        System.out.println("[H|h]      |  Replay Command History");
+        System.out.println("[Q|q]      |  Stop the Program\n");
 	}
 
 	// Execute a given command.
@@ -142,59 +151,41 @@ public class App {
 
 		// Ensure that the command is case blind.
 		String caseBlindCommand = commandTokens[0].toLowerCase();
+		
+		// Ensure that the quit() and history() commands are not added to the command history.
+		boolean shouldAddToHistory = addToHistory && !caseBlindCommand.equals("q") && !caseBlindCommand.equals("h");
+		if (shouldAddToHistory) {
+			commandHistory.add(command);
+		}
 
 		// Execute the user's desired command and update the history queue.
 		switch (caseBlindCommand) {
 			case "u":
 				robot.penUp();
-				if(addToHistory) {
-					commandHistory.add(command);
-				}
 				break;
 			case "d":
 				robot.penDown();
-				if(addToHistory) {
-					commandHistory.add(command);
-				}
 				break;
 			case "r":
 				robot.turnRight();
-				if(addToHistory) {
-					commandHistory.add(command);
-				}
 				break;
 			case "l":
 				robot.turnLeft();
-				if(addToHistory) {
-					commandHistory.add(command);
-				}
 				break;
 			case "m":
 				robot.move(Integer.parseInt(commandTokens[1]), floor);
-				if(addToHistory) {
-					commandHistory.add(command);
-				}
 				break;
 			case "p":
 				print();
-				if(addToHistory) {
-					commandHistory.add(command);
-				}
 				break;
 			case "c":
 				System.out.println(robot);
-				if(addToHistory) {
-					commandHistory.add(command);
-				}
 				break;
 			case "q":
 				quit();
 				break;
 			case "i":
 				initialize(Integer.parseInt(commandTokens[1]));
-				if(addToHistory) {
-					commandHistory.add(command);
-				}
 				break;
 			case "h":
 				history();
