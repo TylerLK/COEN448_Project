@@ -127,28 +127,32 @@ public class Robot {
 
         int oldX = x;
         int oldY = y;
-        int newX = x + steps;
-        int newY = y + steps;
+        int newX;
+        int newY;
         switch (direction) {
             case NORTH:
+                newY = y + steps;
                 if (newY >= floor.length) {
                     throw new ArrayIndexOutOfBoundsException("The robot tried to move outside the floor.");
                 }
                 this.y = newY;
                 break;
             case EAST:
+                newX = x + steps;
                 if (newX >= floor.length) {
                     throw new ArrayIndexOutOfBoundsException("The robot tried to move outside the floor.");
                 }
                 this.x = newX;
                 break;
             case SOUTH:
+                newY = y - steps;
                 if (newY < 0) {
                     throw new ArrayIndexOutOfBoundsException("The robot tried to move outside the floor.");
                 }
                 this.y = newY;
                 break;
             case WEST:
+                newX = x - steps;
                 if (newX < 0) {
                     throw new ArrayIndexOutOfBoundsException("The robot tried to move outside the floor.");
                 }
@@ -156,9 +160,11 @@ public class Robot {
                 break;
         }
 
+        // After updating the position of the robot, we fill in the path it has taken if the pen is down
         if (penOrientation == PenOrientation.DOWN) {
             // Fill in the horizontal path (handles movement in both positive and negative x
             // directions)
+            // if the x position has changed
             if (oldX != this.x) {
                 if (oldX > this.x) {
                     for (int i = oldX; i >= this.x; i--) {
@@ -172,6 +178,7 @@ public class Robot {
             }
             // Fill in the vertical path (handles movement in both positive and negative y
             // directions)
+            // if the y position has changed
             if (oldY != this.y) {
                 if (oldY > this.y) {
                     for (int i = oldY; i >= this.y; i--) {
