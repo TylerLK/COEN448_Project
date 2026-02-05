@@ -73,7 +73,7 @@ public class AppTest {
     }
 
     @Test
-    void moveOutsideGrid_throwsArrayIndexOutOfBoundsException_withCorrectMessage() {
+    void moveOutsideGridThrowsArrayIndexOutOfBoundsException() {
         int[][] floor = new int[2][2];
         Robot robot = new Robot();
 
