@@ -73,22 +73,22 @@ public class AppTest {
     }
 
     @Test
-void moveOutsideGrid_throwsArrayIndexOutOfBoundsException_withCorrectMessage() {
-    int[][] floor = new int[2][2];
-    Robot robot = new Robot();
+    void moveOutsideGrid_throwsArrayIndexOutOfBoundsException_withCorrectMessage() {
+        int[][] floor = new int[2][2];
+        Robot robot = new Robot();
 
-    robot.penDown();
+        robot.penDown();
 
-    ArrayIndexOutOfBoundsException ex = assertThrows(
-        ArrayIndexOutOfBoundsException.class,
-        () -> robot.move(5, floor)
-    );
+        ArrayIndexOutOfBoundsException ex = assertThrows(
+            ArrayIndexOutOfBoundsException.class,
+            () -> robot.move(5, floor)
+        );
 
-    assertEquals(
-        "The robot tried to move outside the floor.",
-        ex.getMessage()
-    );
-}
+        assertEquals(
+            "The robot tried to move outside the floor.",
+            ex.getMessage()
+        );
+    }
 
 
     @Test
@@ -168,10 +168,62 @@ void moveOutsideGrid_throwsArrayIndexOutOfBoundsException_withCorrectMessage() {
     }
 
     @Test
+    public void executeCommandMissingInitArgumentThrows() {
+        resetAppState(3);
+
+        assertThrows(ArrayIndexOutOfBoundsException.class, () -> App.executeCommand("i", true));
+    }
+
+    @Test
     public void executeCommandNonNumericMoveArgumentThrows() {
         resetAppState(3);
 
         assertThrows(NumberFormatException.class, () -> App.executeCommand("m x", true));
+    }
+
+    @Test
+    public void executeCommandEmptyOrBlankCommandPrintsMessage() {
+        resetAppState(3);
+
+        String emptyOutput = captureStdout(() -> App.executeCommand("", true));
+        assertTrue(emptyOutput.contains("Invalid Command. Please try again."));
+
+        String blankOutput = captureStdout(() -> App.executeCommand("   ", true));
+        assertTrue(blankOutput.contains("Invalid Command. Please try again."));
+    }
+
+    @Test
+    public void executeCommandNullCommandThrows() {
+        resetAppState(3);
+
+        assertThrows(NullPointerException.class, () -> App.executeCommand(null, true));
+    }
+
+    @Test
+    public void executeCommandMoveWithExtraArgsUsesFirstArg() {
+        resetAppState(3);
+
+        App.executeCommand("d", true);
+        App.executeCommand("m 1 2", true);
+
+        Robot robot = getRobot();
+        assertEquals(0, robot.getX());
+        assertEquals(1, robot.getY());
+        assertEquals(2, countMarks(getFloor()));
+    }
+
+    @Test
+    public void executeCommandInitWithExtraArgsUsesFirstArg() {
+        resetAppState(3);
+
+        App.executeCommand("i 4 extra", true);
+
+        int[][] floor = getFloor();
+        assertEquals(4, floor.length);
+        for (int i = 0; i < floor.length; i++) {
+            assertEquals(4, floor[i].length);
+        }
+        assertAllZeros(floor);
     }
 
     @Test
