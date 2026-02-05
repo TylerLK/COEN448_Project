@@ -126,8 +126,6 @@ public class RobotTest {
         assertEquals(0, countMarks(floor));
     }
 
-
-
     private static int countMarks(int[][] floor) {
         int count = 0;
         for (int x = 0; x < floor.length; x++) {
