@@ -55,7 +55,7 @@ public class AppTest {
         assertEquals(1, floor[0][2]);
     }
 
-       @Test
+    @Test
     void moveWithNegativeSteps_throwsIllegalArgumentException() {
         int[][] floor = new int[5][5];
         Robot robot = new Robot();
