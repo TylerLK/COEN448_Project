@@ -1,6 +1,7 @@
 package com.robot.COEN448_Project;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
 import com.robot.COEN448_Project.enums.Orientation;
@@ -119,11 +120,7 @@ public class RobotTest {
         int[][] floor = new int[2][2];
         Robot robot = new Robot();
 
-        robot.move(3, floor);
-
-        assertEquals(0, robot.getX());
-        assertEquals(3, robot.getY());
-        assertEquals(0, countMarks(floor));
+        assertThrows(ArrayIndexOutOfBoundsException.class, () -> robot.move(3, floor));
     }
 
     private static int countMarks(int[][] floor) {

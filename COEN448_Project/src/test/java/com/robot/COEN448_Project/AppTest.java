@@ -126,10 +126,11 @@ public class AppTest {
     }
 
     @Test
-    public void executeCommandNegativeMoveThrowsIllegalArgumentException() {
+    public void executeCommandNegativeMovePrintsInvalidCommand() {
         resetAppState(3);
 
-        assertThrows(IllegalArgumentException.class, () -> App.executeCommand("m -1", true));
+        String output = captureStdout(() -> App.executeCommand("m -1", true));
+        assertTrue(output.contains("Invalid Command. The distance must be a non-negative integer."));
     }
 
     @Test
@@ -162,22 +163,44 @@ public class AppTest {
     @Test
     public void executeCommandMissingMoveArgumentThrows() {
         resetAppState(3);
+        String output = captureStdout(() -> App.executeCommand("m", true));
+        assertTrue(output.contains("Invalid Command. Incorrect number of arguments for this command."));
 
-        assertThrows(ArrayIndexOutOfBoundsException.class, () -> App.executeCommand("m", true));
+        Robot robot = getRobot();
+        assertEquals(0, robot.getX());  
+        assertEquals(0, robot.getY());
+        assertEquals(PenOrientation.UP, robot.getPenOrientation());
+        assertEquals(Orientation.NORTH, robot.getDirection());
+
     }
 
     @Test
     public void executeCommandMissingInitArgumentThrows() {
         resetAppState(3);
+        String output = captureStdout(() -> App.executeCommand("i", true));
+        assertTrue(output.contains("Invalid Command. Incorrect number of arguments for this command."));
 
-        assertThrows(ArrayIndexOutOfBoundsException.class, () -> App.executeCommand("i", true));
+         Robot robot = getRobot();
+        assertEquals(0, robot.getX());  
+        assertEquals(0, robot.getY());
+        assertEquals(PenOrientation.UP, robot.getPenOrientation());
+        assertEquals(Orientation.NORTH, robot.getDirection());
+
+        
     }
 
     @Test
     public void executeCommandNonNumericMoveArgumentThrows() {
         resetAppState(3);
+        String output = captureStdout(() -> App.executeCommand("m x", true));
+        assertTrue(output.contains("Invalid Command. The distance must be a non-negative integer."));
 
-        assertThrows(NumberFormatException.class, () -> App.executeCommand("m x", true));
+        Robot robot = getRobot();
+        assertEquals(0, robot.getX());
+        assertEquals(0, robot.getY());
+        assertEquals(PenOrientation.UP, robot.getPenOrientation());
+        assertEquals(Orientation.NORTH, robot.getDirection());
+
     }
 
     @Test
@@ -185,31 +208,26 @@ public class AppTest {
         resetAppState(3);
 
         String emptyOutput = captureStdout(() -> App.executeCommand("", true));
-        assertTrue(emptyOutput.contains("Invalid Command. Please try again."));
+        assertTrue(emptyOutput.contains("Empty Command. Please try again."));
 
         String blankOutput = captureStdout(() -> App.executeCommand("   ", true));
-        assertTrue(blankOutput.contains("Invalid Command. Please try again."));
+        assertTrue(blankOutput.contains("Empty Command. Please try again."));
     }
 
     @Test
     public void executeCommandNullCommandThrows() {
         resetAppState(3);
-
-        assertThrows(NullPointerException.class, () -> App.executeCommand(null, true));
-    }
-
-    @Test
-    public void executeCommandMoveWithExtraArgsUsesFirstArg() {
-        resetAppState(3);
-
-        App.executeCommand("d", true);
-        App.executeCommand("m 1 2", true);
+        String output = captureStdout(() -> App.executeCommand(null, true));
+        assertTrue(output.contains("Empty Command. Please try again."));
 
         Robot robot = getRobot();
-        assertEquals(0, robot.getX());
-        assertEquals(1, robot.getY());
-        assertEquals(2, countMarks(getFloor()));
+        assertEquals(0, robot.getX());  
+        assertEquals(0, robot.getY());
+        assertEquals(PenOrientation.UP, robot.getPenOrientation());
+        assertEquals(Orientation.NORTH, robot.getDirection());
     }
+
+   
 
     @Test
     public void executeCommandInitWithExtraArgsUsesFirstArg() {
@@ -218,9 +236,9 @@ public class AppTest {
         App.executeCommand("i 4 extra", true);
 
         int[][] floor = getFloor();
-        assertEquals(4, floor.length);
+        assertEquals(3, floor.length);
         for (int i = 0; i < floor.length; i++) {
-            assertEquals(4, floor[i].length);
+            assertEquals(3, floor[i].length);
         }
         assertAllZeros(floor);
     }
@@ -228,15 +246,16 @@ public class AppTest {
     @Test
     public void executeCommandNonNumericInitArgumentThrows() {
         resetAppState(3);
-
-        assertThrows(NumberFormatException.class, () -> App.executeCommand("i x", true));
+ String output = captureStdout(() -> App.executeCommand("i x", true));
+        assertTrue(output.contains("Invalid Command. The size must be a positive integer."));
     }
 
     @Test
     public void executeCommandNegativeInitArgumentThrows() {
         resetAppState(3);
+        String output = captureStdout(() -> App.executeCommand("i -1", true));
+        assertTrue(output.contains("Invalid Command. The size must be a positive integer."));
 
-        assertThrows(NegativeArraySizeException.class, () -> App.executeCommand("i -1", true));
     }
 
     @Test
@@ -245,10 +264,13 @@ public class AppTest {
         App.executeCommand("d", true);
         App.executeCommand("m 1", true);
 
-        App.executeCommand("i 0", true);
+        App.executeCommand("i 1", true);
+
+        String output = captureStdout(() -> App.executeCommand("i 0", true));
+        assertTrue(output.contains("Invalid Command. The size must be a positive integer."));
 
         int[][] floor = getFloor();
-        assertEquals(0, floor.length);
+        assertEquals(1, floor.length);
 
         Robot robot = getRobot();
         assertEquals(0, robot.getX());
@@ -277,7 +299,7 @@ public class AppTest {
         long starCount = output.chars().filter(ch -> ch == '*').count();
         assertEquals(2L, starCount);
         assertTrue(output.contains("0"));
-        assertTrue(output.contains("1"));
+        assertTrue(output.contains("1 "));
     }
 
     @Test
