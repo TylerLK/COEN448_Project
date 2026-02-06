@@ -113,59 +113,79 @@ public class Robot {
 
     /**
      * Moves the robot in the current direction by the specified number of steps.
-     * TODO: needs to be checked for out of bounds conditions if we try to move
-     * outside the floor. Maybe throw an exception to reprompt user to enter a new
-     * command.
      * 
      * @param steps The number of steps to move the robot (must be a non-negative
      *              integer).
      * @param floor The floor (2D array) to move the robot on.
-     * @throws IllegalArgumentException if steps is negative.
+     * @throws IllegalArgumentException       if steps is negative.
+     * @throws ArrayIndexOutOfBoundsException if the robot moves outside the floor.
      */
     public void move(int steps, int[][] floor) {
         if (steps < 0) {
             throw new IllegalArgumentException("Steps must be a non-negative integer.");
         }
+
         int oldX = x;
         int oldY = y;
+        int newX;
+        int newY;
         switch (direction) {
             case NORTH:
-                y += steps;
+                newY = y + steps;
+                if (newY >= floor.length) {
+                    throw new ArrayIndexOutOfBoundsException("The robot tried to move outside the floor.");
+                }
+                this.y = newY;
                 break;
             case EAST:
-                x += steps;
+                newX = x + steps;
+                if (newX >= floor.length) {
+                    throw new ArrayIndexOutOfBoundsException("The robot tried to move outside the floor.");
+                }
+                this.x = newX;
                 break;
             case SOUTH:
-                y -= steps;
+                newY = y - steps;
+                if (newY < 0) {
+                    throw new ArrayIndexOutOfBoundsException("The robot tried to move outside the floor.");
+                }
+                this.y = newY;
                 break;
             case WEST:
-                x -= steps;
+                newX = x - steps;
+                if (newX < 0) {
+                    throw new ArrayIndexOutOfBoundsException("The robot tried to move outside the floor.");
+                }
+                this.x = newX;
                 break;
         }
 
+        // After updating the position of the robot, we fill in the path it has taken if the pen is down
         if (penOrientation == PenOrientation.DOWN) {
             // Fill in the horizontal path (handles movement in both positive and negative x
             // directions)
-            if (oldX != x) {
-                if (oldX > x) {
-                    for (int i = oldX; i >= x; i--) {
+            // if the x position has changed
+            if (oldX != this.x) {
+                if (oldX > this.x) {
+                    for (int i = oldX; i >= this.x; i--) {
                         floor[i][oldY] = 1;
                     }
                 } else {
-                    for (int i = oldX; i <= x; i++) {
+                    for (int i = oldX; i <= this.x; i++) {
                         floor[i][oldY] = 1;
                     }
                 }
             }
             // Fill in the vertical path (handles movement in both positive and negative y
             // directions)
-            if (oldY != y) {
-                if (oldY > y) {
-                    for (int i = oldY; i >= y; i--) {
+            // if the y position has changed
+            if (oldY != this.y) {
+                if (oldY > this.y) {
+                    for (int i = oldY; i >= this.y; i--) {
                         floor[oldX][i] = 1;
                     }
                 } else {
-                    for (int i = oldY; i <= y; i++) {
+                    for (int i = oldY; i <= this.y; i++) {
                         floor[oldX][i] = 1;
                     }
                 }
