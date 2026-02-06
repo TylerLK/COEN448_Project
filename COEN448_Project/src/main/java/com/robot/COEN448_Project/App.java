@@ -249,6 +249,7 @@ public class App {
 	 * Robust user input validation for all available commands.
 	 * <br><br>
 	 * @param command The user's desired command.
+	 * @return {@code true} if the command is valid; {@code false} otherwise.
 	 */
 	public static boolean isValidCommand(String command) {
 		// Check if the command is empty.
