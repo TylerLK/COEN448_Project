@@ -5,7 +5,6 @@ import com.robot.COEN448_Project.enums.Orientation;
 import com.robot.COEN448_Project.enums.PenOrientation;
 
 /**
- * 
  * Robot Class
  * 
  * @author Sunil
@@ -13,7 +12,6 @@ import com.robot.COEN448_Project.enums.PenOrientation;
  * @y The y-axis position of the robot.
  * @penOrientation The orientation of the robot's pen.
  * @direction The direction the robot is facing.
- * 
  */
 public class Robot {
     private int x;
@@ -22,9 +20,7 @@ public class Robot {
     private Orientation direction;
 
     /**
-     * 
      * Robot initial position [0,0] pen up and facing North.
-     * 
      */
     public Robot() {
         this.x = 0;
@@ -35,33 +31,27 @@ public class Robot {
  
     // Program Functions
     /**
-     * 
      * [U|u] ==> Pen up.
      * <br><br>
      * Lifts the robot's pen up.
-     * 
      */
     public void penUp() {
         this.penOrientation = PenOrientation.UP;
     }
 
     /**
-     * 
      * [D|d] ==> Pen down.
      * <br><br>
      * Puts the robot's pen down.
-     * 
      */
     public void penDown() {
         this.penOrientation = PenOrientation.DOWN;
     }
 
     /**
-     * 
      * [R|r] ==> Turn right.
      * <br><br>
      * Turns the robot right. Adjusts based on current direction.
-     * 
      */
     public void turnRight() {
         switch (direction) {
@@ -81,11 +71,10 @@ public class Robot {
     }
 
     /**
-     * 
+
      * [L|l] ==> Turn left.
      * <br><br>
      * Turns the robot left. Adjusts based on current direction.
-     * 
      */
     public void turnLeft() {
         switch (direction) {
@@ -105,7 +94,6 @@ public class Robot {
     }
 
     /**
-     * 
      * [M s|m s] ==> Move forward s spaces (s is a non-negative integer).
      * <br><br>
      * Moves the robot in the current direction by the specified number of steps.
@@ -115,7 +103,6 @@ public class Robot {
      * @param floor The floor (2D array) to move the robot on.
      * @throws IllegalArgumentException       if steps is negative.
      * @throws ArrayIndexOutOfBoundsException if the robot moves outside the floor.
-     * 
      */
     public void move(int steps, int[][] floor) {
         if (steps < 0) {
@@ -191,12 +178,10 @@ public class Robot {
     }
 
     /**
-     * 
      * [C|c] ==> Print the robot's current position, the position of the pen, and which direction it is facing.
      * <br><br>
      * Overrides the toString() method to provide the robot's current state.
      * @return A string representation of the robot's current position, pen orientation, and direction.
-     * 
      */
     @Override
     public String toString() {
@@ -205,36 +190,28 @@ public class Robot {
     
     //Utility Functions
     /**
-     * 
      * @return The x-axis position of the robot.
-     * 
      */
     public int getX() {
         return x;
     }
 
     /**
-     * 
      * @return The y-axis position of the robot.
-     * 
      */
     public int getY() {
         return y;
     }
 
     /**
-     * 
      * @return The orientation of the robot's pen (UP or DOWN)
-     * 
      */
     public PenOrientation getPenOrientation() {
         return penOrientation;
     }
     
     /**
-     * 
      * @return The direction the robot is facing.
-     * 
      */
     public Orientation getDirection() {
         return direction;
