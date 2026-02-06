@@ -6,8 +6,10 @@ import java.lang.reflect.Field;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
@@ -289,18 +291,38 @@ public class AppTest {
         assertTrue(output.contains("Position: 0, 1 - Pen: DOWN - Facing: NORTH"));
     }
 
+    
     @Test
-    public void executeCommandPrintRendersStars() {
-        resetAppState(2);
-        App.executeCommand("d", true);
-        App.executeCommand("m 1", true);
+public void executeCommandPrintRendersStars() {
+    resetAppState(2);
+    App.executeCommand("d", true);
+    App.executeCommand("m 1", true);
 
-        String output = captureStdout(() -> App.executeCommand("p", true));
-        long starCount = output.chars().filter(ch -> ch == '*').count();
-        assertEquals(2L, starCount);
-        assertTrue(output.contains("0"));
-        assertTrue(output.contains("1 "));
+    String output = captureStdout(() -> App.executeCommand("p", true));
+
+    
+    long starCount = output.chars().filter(ch -> ch == '*').count();
+    assertEquals(2L, starCount);
+
+    
+    String[] lines = output.split("\\R");
+    String bottomIndexLine = null;
+    for (int i = lines.length - 1; i >= 0; i--) {
+        if (!lines[i].trim().isEmpty()) {
+            bottomIndexLine = lines[i];
+            break;
+        }
     }
+    assertNotNull(bottomIndexLine, "Expected a bottom index line to be printed");
+
+    String[] tokens = bottomIndexLine.trim().split("\\s+");
+    assertArrayEquals(
+        new String[]{"0", "1"},
+        tokens,
+        "Bottom index line should contain column indices: 0 1"
+    );
+}
+
 
     @Test
     public void executeCommandQuitStopsProgram() {
