@@ -6,7 +6,6 @@ import java.util.Queue;
 import java.util.ArrayDeque;
 
 /**
- * 
  * App Class
  * 
  * @author Tyler, Sunil
@@ -16,7 +15,6 @@ import java.util.ArrayDeque;
  * @robot The robot that will be traversing the floor.
  * @isRunning Boolean value to check if the user has quit the program.
  * @commandHistory Queue to keep track of the history of user command input.
- * 
  */
 public class App {
 	private final static boolean SHOULD_PRINT_MENU = true;
@@ -74,7 +72,6 @@ public class App {
 	 * [P|p] ==> Print the N X N array and display the indices.
 	 * <br><br>
 	 * Prints the floor (2D array) to the console.
-	 * 
 	 */
 	public static void print() {
 		System.out.println();
@@ -114,7 +111,6 @@ public class App {
 	 * [Q|q] ==> Stop the Program.
 	 * <br><br>
 	 * Breaks the main program loop and notifies the user of program termination.
-	 * 
 	 */
 	public static void quit() {
 		isRunning = false;
@@ -129,7 +125,6 @@ public class App {
 	 * Note that the command history queue is only created if it does not already exist.
 	 * <br><br>
 	 * @param n The size of the floor (N x N).
-	 * 
 	 */
 	public static void initialize(int n) {
 		// Dynamically create the floor array, robot, and history queue.
@@ -144,7 +139,6 @@ public class App {
 	 * [H|h] ==> Replay all the steps in the history since the last program start.
 	 * <br><br>
 	 * Re-executes all commands in commandHistory in the order they were input by the user.
-	 * 
 	 */
 	public static void history() {
 		// Loop through the entirety of commandHistory.
@@ -165,9 +159,7 @@ public class App {
 
 	// Utility Functions
 	/**
-	 * 
 	 * Prints a menu containing all commands available to the user, including their descriptions.
-	 * 
 	 */
 	public static void printMenu() {
 		System.out.println("\nAvailable Commands:");
@@ -184,14 +176,12 @@ public class App {
 	}
 
 	/**
-	 * 
 	 * Executes the user's desired command.
 	 * <br><br>
 	 * Note that invalid commands are not executed.
 	 * <br><br>
 	 * @param command The user's desired command.
 	 * @param addToHistory Boolean to control whether or not the command should be added to commandHistory.
-	 * 
 	 */
 	public static void executeCommand(String command, boolean addToHistory) {
 		if (!isValidCommand(command)) {
@@ -256,11 +246,9 @@ public class App {
 	}
 	
 	/**
-	 * 
 	 * Robust user input validation for all available commands.
 	 * <br><br>
 	 * @param command The user's desired command.
-	 * 
 	 */
 	public static boolean isValidCommand(String command) {
 		// Check if the command is empty.
