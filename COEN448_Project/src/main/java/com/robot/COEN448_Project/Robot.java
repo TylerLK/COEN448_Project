@@ -187,7 +187,7 @@ public class Robot {
         return "Position: " + x + ", " + y + " - Pen: " + penOrientation + " - Facing: " + direction;
     }
     
-    //Utility Functions
+    // Utility Functions
     /**
      * @return The x-axis position of the robot.
      */
