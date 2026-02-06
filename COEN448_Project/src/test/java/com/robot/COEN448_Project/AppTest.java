@@ -6,8 +6,10 @@ import java.lang.reflect.Field;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
@@ -126,10 +128,11 @@ public class AppTest {
     }
 
     @Test
-    public void executeCommandNegativeMoveThrowsIllegalArgumentException() {
+    public void executeCommandNegativeMovePrintsInvalidCommand() {
         resetAppState(3);
 
-        assertThrows(IllegalArgumentException.class, () -> App.executeCommand("m -1", true));
+        String output = captureStdout(() -> App.executeCommand("m -1", true));
+        assertTrue(output.contains("Invalid Command. The distance must be a non-negative integer."));
     }
 
     @Test
@@ -162,22 +165,44 @@ public class AppTest {
     @Test
     public void executeCommandMissingMoveArgumentThrows() {
         resetAppState(3);
+        String output = captureStdout(() -> App.executeCommand("m", true));
+        assertTrue(output.contains("Invalid Command. Incorrect number of arguments for this command."));
 
-        assertThrows(ArrayIndexOutOfBoundsException.class, () -> App.executeCommand("m", true));
+        Robot robot = getRobot();
+        assertEquals(0, robot.getX());  
+        assertEquals(0, robot.getY());
+        assertEquals(PenOrientation.UP, robot.getPenOrientation());
+        assertEquals(Orientation.NORTH, robot.getDirection());
+
     }
 
     @Test
     public void executeCommandMissingInitArgumentThrows() {
         resetAppState(3);
+        String output = captureStdout(() -> App.executeCommand("i", true));
+        assertTrue(output.contains("Invalid Command. Incorrect number of arguments for this command."));
 
-        assertThrows(ArrayIndexOutOfBoundsException.class, () -> App.executeCommand("i", true));
+         Robot robot = getRobot();
+        assertEquals(0, robot.getX());  
+        assertEquals(0, robot.getY());
+        assertEquals(PenOrientation.UP, robot.getPenOrientation());
+        assertEquals(Orientation.NORTH, robot.getDirection());
+
+        
     }
 
     @Test
     public void executeCommandNonNumericMoveArgumentThrows() {
         resetAppState(3);
+        String output = captureStdout(() -> App.executeCommand("m x", true));
+        assertTrue(output.contains("Invalid Command. The distance must be a non-negative integer."));
 
-        assertThrows(NumberFormatException.class, () -> App.executeCommand("m x", true));
+        Robot robot = getRobot();
+        assertEquals(0, robot.getX());
+        assertEquals(0, robot.getY());
+        assertEquals(PenOrientation.UP, robot.getPenOrientation());
+        assertEquals(Orientation.NORTH, robot.getDirection());
+
     }
 
     @Test
@@ -185,31 +210,26 @@ public class AppTest {
         resetAppState(3);
 
         String emptyOutput = captureStdout(() -> App.executeCommand("", true));
-        assertTrue(emptyOutput.contains("Invalid Command. Please try again."));
+        assertTrue(emptyOutput.contains("Empty Command. Please try again."));
 
         String blankOutput = captureStdout(() -> App.executeCommand("   ", true));
-        assertTrue(blankOutput.contains("Invalid Command. Please try again."));
+        assertTrue(blankOutput.contains("Empty Command. Please try again."));
     }
 
     @Test
     public void executeCommandNullCommandThrows() {
         resetAppState(3);
-
-        assertThrows(NullPointerException.class, () -> App.executeCommand(null, true));
-    }
-
-    @Test
-    public void executeCommandMoveWithExtraArgsUsesFirstArg() {
-        resetAppState(3);
-
-        App.executeCommand("d", true);
-        App.executeCommand("m 1 2", true);
+        String output = captureStdout(() -> App.executeCommand(null, true));
+        assertTrue(output.contains("Empty Command. Please try again."));
 
         Robot robot = getRobot();
-        assertEquals(0, robot.getX());
-        assertEquals(1, robot.getY());
-        assertEquals(2, countMarks(getFloor()));
+        assertEquals(0, robot.getX());  
+        assertEquals(0, robot.getY());
+        assertEquals(PenOrientation.UP, robot.getPenOrientation());
+        assertEquals(Orientation.NORTH, robot.getDirection());
     }
+
+   
 
     @Test
     public void executeCommandInitWithExtraArgsUsesFirstArg() {
@@ -218,9 +238,9 @@ public class AppTest {
         App.executeCommand("i 4 extra", true);
 
         int[][] floor = getFloor();
-        assertEquals(4, floor.length);
+        assertEquals(3, floor.length);
         for (int i = 0; i < floor.length; i++) {
-            assertEquals(4, floor[i].length);
+            assertEquals(3, floor[i].length);
         }
         assertAllZeros(floor);
     }
@@ -228,15 +248,16 @@ public class AppTest {
     @Test
     public void executeCommandNonNumericInitArgumentThrows() {
         resetAppState(3);
-
-        assertThrows(NumberFormatException.class, () -> App.executeCommand("i x", true));
+ String output = captureStdout(() -> App.executeCommand("i x", true));
+        assertTrue(output.contains("Invalid Command. The size must be a positive integer."));
     }
 
     @Test
     public void executeCommandNegativeInitArgumentThrows() {
         resetAppState(3);
+        String output = captureStdout(() -> App.executeCommand("i -1", true));
+        assertTrue(output.contains("Invalid Command. The size must be a positive integer."));
 
-        assertThrows(NegativeArraySizeException.class, () -> App.executeCommand("i -1", true));
     }
 
     @Test
@@ -245,10 +266,13 @@ public class AppTest {
         App.executeCommand("d", true);
         App.executeCommand("m 1", true);
 
-        App.executeCommand("i 0", true);
+        App.executeCommand("i 1", true);
+
+        String output = captureStdout(() -> App.executeCommand("i 0", true));
+        assertTrue(output.contains("Invalid Command. The size must be a positive integer."));
 
         int[][] floor = getFloor();
-        assertEquals(0, floor.length);
+        assertEquals(1, floor.length);
 
         Robot robot = getRobot();
         assertEquals(0, robot.getX());
@@ -267,26 +291,38 @@ public class AppTest {
         assertTrue(output.contains("Position: 0, 1 - Pen: DOWN - Facing: NORTH"));
     }
 
+    
     @Test
-    public void executeCommandPrintRendersStars() {
-        resetAppState(2);
-        App.executeCommand("d", true);
-        App.executeCommand("m 1", true);
+public void executeCommandPrintRendersStars() {
+    resetAppState(2);
+    App.executeCommand("d", true);
+    App.executeCommand("m 1", true);
 
-        String output = captureStdout(() -> App.executeCommand("p", true));
-        long starCount = output.chars().filter(ch -> ch == '*').count();
-        assertEquals(2L, starCount);
-        String[] lines = output.split("\\R");
-        String lastLine = "";
-        for (int i = lines.length - 1; i >= 0; i--) {
-            if (!lines[i].trim().isEmpty()) {
-                lastLine = lines[i];
-                break;
-            }
+    String output = captureStdout(() -> App.executeCommand("p", true));
+
+    
+    long starCount = output.chars().filter(ch -> ch == '*').count();
+    assertEquals(2L, starCount);
+
+    
+    String[] lines = output.split("\\R");
+    String bottomIndexLine = null;
+    for (int i = lines.length - 1; i >= 0; i--) {
+        if (!lines[i].trim().isEmpty()) {
+            bottomIndexLine = lines[i];
+            break;
         }
-        assertTrue(lastLine.contains("0"));
-        assertTrue(lastLine.contains("1"));
     }
+    assertNotNull(bottomIndexLine, "Expected a bottom index line to be printed");
+
+    String[] tokens = bottomIndexLine.trim().split("\\s+");
+    assertArrayEquals(
+        new String[]{"0", "1"},
+        tokens,
+        "Bottom index line should contain column indices: 0 1"
+    );
+}
+
 
     @Test
     public void executeCommandQuitStopsProgram() {
