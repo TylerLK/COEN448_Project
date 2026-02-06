@@ -142,7 +142,8 @@ public class App {
 	 */
 	public static void history() {
 		// Loop through the entirety of commandHistory.
-		for (int i = 0; i < commandHistory.size(); i++) {
+		int historySize = commandHistory.size();
+		for (int i = 0; i < historySize; i++) {
 			// Retrieve the next command from the command history.
 			String command = commandHistory.poll();
 
