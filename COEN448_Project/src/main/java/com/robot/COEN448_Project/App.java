@@ -5,22 +5,24 @@ import java.util.Scanner;
 import java.util.Queue;
 import java.util.ArrayDeque;
 
+/**
+ * 
+ * App Class
+ * 
+ * @author Tyler, Sunil
+ * 
+ * @SHOULD_PRINT_MENU Boolean to control whether or not the menu should be printed during runtime.
+ * @floor Entries represent the individual tiles of the floor that the robot will roam around. "0" = Un-drawn and "1" = Drawn.
+ * @robot The robot that will be traversing the floor.
+ * @isRunning Boolean value to check if the user has quit the program.
+ * @commandHistory Queue to keep track of the history of user command input.
+ * 
+ */
 public class App {
-	// Boolean to control whether or not the menu should be printed during runtime.
 	private final static boolean SHOULD_PRINT_MENU = true;
-
-	// Main application variables.
-	// Entries represent the individual tiles of the floor that the robot will roam
-	// around. "0" = Un-drawn and "1" = Drawn.
 	private static int[][] floor;
-
-	// The robot that will be traversing the floor.
 	private static Robot robot;
-
-	// Boolean value to check if the user has quit the program.
 	private static boolean isRunning = true;
-
-	// Queue to keep track of the history of commands inputted by the user.
 	private static Queue<String> commandHistory;
 
 	public static void main(String[] args) {
@@ -68,10 +70,11 @@ public class App {
 	}
 
 	// Program Functions
-
 	/**
-	 * Prints the floor (2D array) to the console. [P|p] ==> Print the N X N array
-	 * (i.e., Floor).
+	 * [P|p] ==> Print the N X N array and display the indices.
+	 * <br><br>
+	 * Prints the floor (2D array) to the console.
+	 * 
 	 */
 	public static void print() {
 		System.out.println();
@@ -107,13 +110,27 @@ public class App {
 		System.out.println();
 	}
 
-	// [Q|q] ==> Stop the Program.
+	/**
+	 * [Q|q] ==> Stop the Program.
+	 * <br><br>
+	 * Breaks the main program loop and notifies the user of program termination.
+	 * 
+	 */
 	public static void quit() {
 		isRunning = false;
 		System.out.println("Exiting Program. Goodbye!");
 	}
 
-	// [I n|i n] ==> Initialize the System
+	/**
+	 * [I n|i n] ==> Initialize the System
+	 * <br><br>
+	 * (Re)Initializes the floor, robot, and command history queue.
+	 * <br><br>
+	 * Note that the command history queue is only created if it does not already exist.
+	 * <br><br>
+	 * @param n The size of the floor (N x N).
+	 * 
+	 */
 	public static void initialize(int n) {
 		// Dynamically create the floor array, robot, and history queue.
 		floor = new int[n][n];
@@ -123,12 +140,15 @@ public class App {
 		}
 	}
 
-	// [H|h] ==> Replay all the steps in the history since the last program start.
+	/**
+	 * [H|h] ==> Replay all the steps in the history since the last program start.
+	 * <br><br>
+	 * Re-executes all commands in commandHistory in the order they were input by the user.
+	 * 
+	 */
 	public static void history() {
-		// Define the number of recorded commands in the command history.
-		int historySize = commandHistory.size();
-
-		for (int i = 0; i < historySize; i++) {
+		// Loop through the entirety of commandHistory.
+		for (int i = 0; i < commandHistory.size(); i++) {
 			// Retrieve the next command from the command history.
 			String command = commandHistory.poll();
 
@@ -144,7 +164,11 @@ public class App {
 	}
 
 	// Utility Functions
-	// Print a menu for the user.
+	/**
+	 * 
+	 * Prints a menu containing all commands available to the user, including their descriptions.
+	 * 
+	 */
 	public static void printMenu() {
 		System.out.println("\nAvailable Commands:");
 		System.out.println("[U|u]      |  Pen Up");
@@ -159,7 +183,16 @@ public class App {
 		System.out.println("[Q|q]      |  Stop the Program\n");
 	}
 
-	// Execute a given command.
+	/**
+	 * 
+	 * Executes the user's desired command.
+	 * <br><br>
+	 * Note that invalid commands are not executed.
+	 * <br><br>
+	 * @param command The user's desired command.
+	 * @param addToHistory Boolean to control whether or not the command should be added to commandHistory.
+	 * 
+	 */
 	public static void executeCommand(String command, boolean addToHistory) {
 		if (!isValidCommand(command)) {
 			return;
@@ -221,7 +254,14 @@ public class App {
 				break;
 		}
 	}
-
+	
+	/**
+	 * 
+	 * Robust user input validation for all available commands.
+	 * <br><br>
+	 * @param command The user's desired command.
+	 * 
+	 */
 	public static boolean isValidCommand(String command) {
 		// Check if the command is empty.
 		if (command == null || command.trim().isEmpty()) {
