@@ -51,7 +51,7 @@ mvn test
 Test outputs and reports will be generated in `target/surefire-reports/`.
 
 
-### Running in VS Code
+## Running in VS Code
 
 - Open the project folder in VS Code.
 - Install the **Java Extension Pack** (if not already installed).
@@ -60,7 +60,7 @@ Test outputs and reports will be generated in `target/surefire-reports/`.
 	the program can read stdin from the integrated terminal.
 - Start the program with **F5** (debug) or **Ctrl+F5** (run without debugging).
 
-### Running in Eclipse
+## Running in Eclipse
 
 - Import the project: File > Import... > Maven > Existing Maven Projects and
 	select the folder containing `pom.xml`.
@@ -78,7 +78,7 @@ Test outputs and reports will be generated in `target/surefire-reports/`.
 
 ## AI Usage
 
---AI Usage Claim
+AI Usage Claim
 
 *Tools Used*
 
@@ -86,7 +86,7 @@ The primary tools used throughout the development and testing of this phase of o
 
 ### Prompts
 
-#### Test Case Development
+#### <u>Test Case Development</u>
 
 **Context**
 
@@ -108,18 +108,17 @@ The floor is represented as a 2D array of integers:
 When the print command (p) is given, wherever there is a 1 in the array, we display an asterisk; wherever there is a zero, we display a blank.
 
 The system must correctly implement the commands:
-| Command | Meaning |
-|---------|---------|
-| `[U\|u]` | Pen up |
-| `[D\|d]` | Pen down |
-| `[R\|r]` | Turn right |
-| `[L\|l]` | Turn left |
-| `[M s\|m s]` | Move forward s spaces (s is a non-negative integer) |
-| `[P\|p]` | Print the N by N array and display the indices |
-| `[C\|c]` | Print the current position of the pen and whether it is up or down, and its facing direction |
-| `[Q\|q]` | Stop the program |
-| `[I n\|i n]` | Initialize the system: The values of the array floor are zeros, and the robot is back to [0, 0], pen up and facing north. n is the size of the array, an integer greater than zero |
-| `[H\|h]` | Replay all the steps in the history since the last start of the program |
+
+- `[U|u]` — Pen up
+- `[D|d]` — Pen down
+- `[R|r]` — Turn right
+- `[L|l]` — Turn left
+- `[M s|m s]` — Move forward s spaces (s is a non-negative integer)
+- `[P|p]` — Print the N by N array and display the indices
+- `[C|c]` — Print the current position of the pen and whether it is up or down, and its facing direction
+- `[Q|q]` — Stop the program
+- `[I n|i n]` — Initialize the system: The values of the array floor are zeros, and the robot is back to [0, 0], pen up and facing north. n is the size of the array, an integer greater than zero
+- `[H|h]` — Replay all the steps in the history since the last start of the program
 
 By default, input of command `[M s|m s]` and `[I n|i n]` should follow the format of a command character followed by zero or one space and then an integer greater than zero.
 
@@ -189,7 +188,7 @@ Failure to correctly test Task 1 may result in:
 - Poor foundation for the next step of the project (code coverage analysis)
 - High-quality unit tests here reduce debugging cost and increase confidence in later milestones
 
-#### Application Refactoring
+#### <u>Application Refactoring</u>
 
 **Context**
 
