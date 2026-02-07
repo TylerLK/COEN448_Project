@@ -86,7 +86,7 @@ The primary tools used throughout the development and testing of this phase of o
 
 ### Prompts
 
-#### <u>Test Case Development</u>
+#### Test Case Development
 
 **Context**
 
@@ -108,7 +108,6 @@ The floor is represented as a 2D array of integers:
 When the print command (p) is given, wherever there is a 1 in the array, we display an asterisk; wherever there is a zero, we display a blank.
 
 The system must correctly implement the commands:
-
 - `[U|u]` — Pen up
 - `[D|d]` — Pen down
 - `[R|r]` — Turn right
@@ -123,7 +122,6 @@ The system must correctly implement the commands:
 By default, input of command `[M s|m s]` and `[I n|i n]` should follow the format of a command character followed by zero or one space and then an integer greater than zero.
 
 **Objective**
-
 Design JUnit unit tests to verify the correctness of the application functionality, focusing on:
 - Robot state tracking (position, direction, pen)
 - Movement logic and grid updates
@@ -135,7 +133,6 @@ Design JUnit unit tests to verify the correctness of the application functionali
 - No duplicate tests
 
 **Scope**
-
 Include unit-level tests only targeting:
 
 *Robot State*
@@ -186,9 +183,11 @@ Failure to correctly test Task 1 may result in:
 - Invalid traced paths
 - Inconsistent grading during demo
 - Poor foundation for the next step of the project (code coverage analysis)
-- High-quality unit tests here reduce debugging cost and increase confidence in later milestones
+High-quality unit tests here reduce debugging cost and increase confidence in later milestones
 
-#### <u>Application Refactoring</u>
+---------------------------------------------------end of prompt----------------------------------------------------------------
+
+#### Application Refactoring
 
 **Context**
 
@@ -226,6 +225,7 @@ Produce an `App_refactored.java` file containing clearly denoted changes.
 - Only refactor the `history()`, `print()`, `printMenu()`, & `executeCommand()` functions.
 - Keep current data structures intact.
 - Keep utility function generation to a minimum.
+
 
 
 ## Notes
