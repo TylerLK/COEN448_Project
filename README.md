@@ -185,7 +185,7 @@ Failure to correctly test Task 1 may result in:
 - Poor foundation for the next step of the project (code coverage analysis)
 High-quality unit tests here reduce debugging cost and increase confidence in later milestones
 
----------------------------------------------------end of prompt----------------------------------------------------------------
+---------------------------------------------------end of prompt--------------------------------------------------------------
 
 #### Application Refactoring
 
@@ -227,9 +227,3 @@ Produce an `App_refactored.java` file containing clearly denoted changes.
 - Keep utility function generation to a minimum.
 
 
-
-## Notes
-
-- The `App` class validates user commands and prints user-facing error messages.
-- Low-level behavior (exceptions thrown by `Robot`) is covered by unit tests in
-	the test suite.
