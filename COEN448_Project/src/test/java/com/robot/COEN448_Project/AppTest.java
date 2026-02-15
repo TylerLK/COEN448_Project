@@ -1,132 +1,477 @@
 package com.robot.COEN448_Project;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
-import java.nio.charset.StandardCharsets;
+import java.util.ArrayDeque;
+import java.util.Queue;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
+
+import com.robot.COEN448_Project.enums.Orientation;
+import com.robot.COEN448_Project.enums.PenOrientation;
 
 public class AppTest {
 
     @Test
-    public void constructorCanBeInvoked() {
-        App app = new App();
-        assertTrue(app != null);
+    public void initializeCreatesCleanFloorAndRobot() {
+        resetAppState(4);
+
+        int[][] floor = getFloor();
+        assertEquals(4, floor.length);
+        for (int i = 0; i < floor.length; i++) {
+            assertEquals(4, floor[i].length);
+        }
+        assertAllZeros(floor);
+
+        Robot robot = getRobot();
+        assertEquals(0, robot.getX());
+        assertEquals(0, robot.getY());
+        assertEquals(PenOrientation.UP, robot.getPenOrientation());
+        assertEquals(Orientation.NORTH, robot.getDirection());
     }
 
     @Test
-    public void initializeCreatesFloorAndSetsRobotStartPosition() throws Exception {
-        App.Initialize(4);
+    public void executeCommandMovesAndMarksWithPenDown() {
+        resetAppState(5);
 
-        char[][] floor = getFloor();
-        int[][] floorStatus = getFloorStatus();
+        App.executeCommand("D", true);
+        App.executeCommand("m 2", true);
 
-        assertEquals(4, floor.length);
-        assertEquals(4, floorStatus.length);
-        assertEquals(0, getIntField("robotPositionX"));
-        assertEquals(3, getIntField("robotPositionY"));
+        Robot robot = getRobot();
+        assertEquals(0, robot.getX());
+        assertEquals(2, robot.getY());
+        assertEquals(PenOrientation.DOWN, robot.getPenOrientation());
+        assertEquals(Orientation.NORTH, robot.getDirection());
 
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                assertEquals(' ', floor[i][j]);
-                assertEquals(0, floorStatus[i][j]);
+        int[][] floor = getFloor();
+        assertEquals(3, countMarks(floor));
+        assertEquals(1, floor[0][0]);
+        assertEquals(1, floor[0][1]);
+        assertEquals(1, floor[0][2]);
+    }
+
+    @Test
+    void moveWithNegativeStepsThrowsIllegalArgumentException() {
+        int[][] floor = new int[5][5];
+        Robot robot = new Robot();
+
+        IllegalArgumentException ex = assertThrows(
+            IllegalArgumentException.class,
+            () -> robot.move(-1, floor),
+            "Negative steps should throw IllegalArgumentException"
+        );
+
+        assertEquals(
+            "Steps must be a non-negative integer.",
+            ex.getMessage()
+        );
+    }
+
+    @Test
+    void moveOutsideGridThrowsArrayIndexOutOfBoundsException() {
+        int[][] floor = new int[2][2];
+        Robot robot = new Robot();
+
+        robot.penDown();
+
+        ArrayIndexOutOfBoundsException ex = assertThrows(
+            ArrayIndexOutOfBoundsException.class,
+            () -> robot.move(5, floor)
+        );
+
+        assertEquals(
+            "The robot tried to move outside the floor.",
+            ex.getMessage()
+        );
+    }
+
+    @Test
+    public void executeCommandPenUpAndDownAffectsRobot() {
+        resetAppState(3);
+
+        App.executeCommand("d", true);
+        assertEquals(PenOrientation.DOWN, getRobot().getPenOrientation());
+
+        App.executeCommand("u", true);
+        assertEquals(PenOrientation.UP, getRobot().getPenOrientation());
+    }
+
+    @Test
+    public void executeCommandTurnsUpdateDirection() {
+        resetAppState(3);
+
+        App.executeCommand("r", true);
+        assertEquals(Orientation.EAST, getRobot().getDirection());
+
+        App.executeCommand("l", true);
+        assertEquals(Orientation.NORTH, getRobot().getDirection());
+    }
+
+    @Test
+    public void executeCommandMoveZeroDoesNotMarkOrMove() {
+        resetAppState(3);
+
+        App.executeCommand("d", true);
+        App.executeCommand("m 0", true);
+
+        Robot robot = getRobot();
+        assertEquals(0, robot.getX());
+        assertEquals(0, robot.getY());
+        assertEquals(0, countMarks(getFloor()));
+    }
+
+    @Test
+    public void executeCommandNegativeMovePrintsInvalidCommand() {
+        resetAppState(3);
+
+        String output = captureStdout(() -> App.executeCommand("m -1", true));
+        assertTrue(output.contains("Invalid Command. The distance must be a non-negative integer."));
+    }
+
+    @Test
+    public void executeCommandTrimsInputAndAcceptsUppercase() {
+        resetAppState(3);
+
+        App.executeCommand("  d  ", true);
+        App.executeCommand("  M 1  ", true);
+
+        Robot robot = getRobot();
+        assertEquals(0, robot.getX());
+        assertEquals(1, robot.getY());
+        assertEquals(2, countMarks(getFloor()));
+    }
+
+    @Test
+    public void executeCommandInvalidCommandPrintsMessage() {
+        resetAppState(3);
+
+        String output = captureStdout(() -> App.executeCommand("x", true));
+        assertTrue(output.contains("Invalid Command. Please try again."));
+
+        Robot robot = getRobot();
+        assertEquals(0, robot.getX());
+        assertEquals(0, robot.getY());
+        assertEquals(PenOrientation.UP, robot.getPenOrientation());
+        assertEquals(Orientation.NORTH, robot.getDirection());
+    }
+
+    @Test
+    public void executeCommandMissingMoveArgumentThrows() {
+        resetAppState(3);
+        String output = captureStdout(() -> App.executeCommand("m", true));
+        assertTrue(output.contains("Invalid Command. Incorrect number of arguments for this command."));
+
+        Robot robot = getRobot();
+        assertEquals(0, robot.getX());  
+        assertEquals(0, robot.getY());
+        assertEquals(PenOrientation.UP, robot.getPenOrientation());
+        assertEquals(Orientation.NORTH, robot.getDirection());
+
+    }
+
+    @Test
+    public void executeCommandMissingInitArgumentThrows() {
+        resetAppState(3);
+        String output = captureStdout(() -> App.executeCommand("i", true));
+        assertTrue(output.contains("Invalid Command. Incorrect number of arguments for this command."));
+
+         Robot robot = getRobot();
+        assertEquals(0, robot.getX());  
+        assertEquals(0, robot.getY());
+        assertEquals(PenOrientation.UP, robot.getPenOrientation());
+        assertEquals(Orientation.NORTH, robot.getDirection());
+
+        
+    }
+
+    @Test
+    public void executeCommandNonNumericMoveArgumentThrows() {
+        resetAppState(3);
+        String output = captureStdout(() -> App.executeCommand("m x", true));
+        assertTrue(output.contains("Invalid Command. The distance must be a non-negative integer."));
+
+        Robot robot = getRobot();
+        assertEquals(0, robot.getX());
+        assertEquals(0, robot.getY());
+        assertEquals(PenOrientation.UP, robot.getPenOrientation());
+        assertEquals(Orientation.NORTH, robot.getDirection());
+
+    }
+
+    @Test
+    public void executeCommandEmptyOrBlankCommandPrintsMessage() {
+        resetAppState(3);
+
+        String emptyOutput = captureStdout(() -> App.executeCommand("", true));
+        assertTrue(emptyOutput.contains("Empty Command. Please try again."));
+
+        String blankOutput = captureStdout(() -> App.executeCommand("   ", true));
+        assertTrue(blankOutput.contains("Empty Command. Please try again."));
+    }
+
+    @Test
+    public void executeCommandNullCommandThrows() {
+        resetAppState(3);
+        String output = captureStdout(() -> App.executeCommand(null, true));
+        assertTrue(output.contains("Empty Command. Please try again."));
+
+        Robot robot = getRobot();
+        assertEquals(0, robot.getX());  
+        assertEquals(0, robot.getY());
+        assertEquals(PenOrientation.UP, robot.getPenOrientation());
+        assertEquals(Orientation.NORTH, robot.getDirection());
+    }
+
+   
+
+    @Test
+    public void executeCommandInitWithExtraArgsUsesFirstArg() {
+        resetAppState(3);
+
+        App.executeCommand("i 4 extra", true);
+
+        int[][] floor = getFloor();
+        assertEquals(3, floor.length);
+        for (int i = 0; i < floor.length; i++) {
+            assertEquals(3, floor[i].length);
+        }
+        assertAllZeros(floor);
+    }
+
+    @Test
+    public void executeCommandNonNumericInitArgumentThrows() {
+        resetAppState(3);
+ String output = captureStdout(() -> App.executeCommand("i x", true));
+        assertTrue(output.contains("Invalid Command. The size must be a positive integer."));
+    }
+
+    @Test
+    public void executeCommandNegativeInitArgumentThrows() {
+        resetAppState(3);
+        String output = captureStdout(() -> App.executeCommand("i -1", true));
+        assertTrue(output.contains("Invalid Command. The size must be a positive integer."));
+
+    }
+
+    @Test
+    public void executeCommandZeroInitCreatesEmptyFloorAndResetsRobot() {
+        resetAppState(3);
+        App.executeCommand("d", true);
+        App.executeCommand("m 1", true);
+
+        App.executeCommand("i 1", true);
+
+        String output = captureStdout(() -> App.executeCommand("i 0", true));
+        assertTrue(output.contains("Invalid Command. The size must be a positive integer."));
+
+        int[][] floor = getFloor();
+        assertEquals(1, floor.length);
+
+        Robot robot = getRobot();
+        assertEquals(0, robot.getX());
+        assertEquals(0, robot.getY());
+        assertEquals(PenOrientation.UP, robot.getPenOrientation());
+        assertEquals(Orientation.NORTH, robot.getDirection());
+    }
+
+    @Test
+    public void executeCommandPrintsRobotState() {
+        resetAppState(3);
+        App.executeCommand("d", true);
+        App.executeCommand("m 1", true);
+
+        String output = captureStdout(() -> App.executeCommand("c", true));
+        assertTrue(output.contains("Position: 0, 1 - Pen: DOWN - Facing: NORTH"));
+    }
+
+    
+    @Test
+public void executeCommandPrintRendersStars() {
+    resetAppState(2);
+    App.executeCommand("d", true);
+    App.executeCommand("m 1", true);
+
+    String output = captureStdout(() -> App.executeCommand("p", true));
+
+    
+    long starCount = output.chars().filter(ch -> ch == '*').count();
+    assertEquals(2L, starCount);
+
+    
+    String[] lines = output.split("\\R");
+    String bottomIndexLine = null;
+    for (int i = lines.length - 1; i >= 0; i--) {
+        if (!lines[i].trim().isEmpty()) {
+            bottomIndexLine = lines[i];
+            break;
+        }
+    }
+    assertNotNull(bottomIndexLine, "Expected a bottom index line to be printed");
+
+    String[] tokens = bottomIndexLine.trim().split("\\s+");
+    assertArrayEquals(
+        new String[]{"0", "1"},
+        tokens,
+        "Bottom index line should contain column indices: 0 1"
+    );
+}
+
+
+    @Test
+    public void executeCommandQuitStopsProgram() {
+        resetAppState(2);
+
+        String output = captureStdout(() -> App.executeCommand("q", true));
+        assertFalse(getIsRunning());
+        assertTrue(output.contains("Exiting Program. Goodbye!"));
+    }
+
+    @Test
+    public void initializeCommandResetsGridAndRobot() {
+        resetAppState(4);
+        App.executeCommand("d", true);
+        App.executeCommand("m 3", true);
+
+        App.executeCommand("i 2", true);
+
+        int[][] floor = getFloor();
+        assertEquals(2, floor.length);
+        for (int i = 0; i < floor.length; i++) {
+            assertEquals(2, floor[i].length);
+        }
+        assertAllZeros(floor);
+
+        Robot robot = getRobot();
+        assertEquals(0, robot.getX());
+        assertEquals(0, robot.getY());
+        assertEquals(PenOrientation.UP, robot.getPenOrientation());
+        assertEquals(Orientation.NORTH, robot.getDirection());
+    }
+
+    @Test
+    public void executeCommandDoesNotAddToHistoryWhenFlagFalse() {
+        resetAppState(3);
+
+        App.executeCommand("d", false);
+        Queue<String> history = getHistory();
+        assertEquals(0, history.size());
+    }
+
+    @Test
+    public void historyReplaysCommandsAndPreservesQueue() {
+        resetAppState(4);
+
+        App.executeCommand("d", true);
+        App.executeCommand("m 1", true);
+        App.executeCommand("r", true);
+        App.executeCommand("m 1", true);
+
+        Queue<String> before = new ArrayDeque<>(getHistory());
+
+        String output = captureStdout(() -> App.executeCommand("h", true));
+        assertTrue(output.contains("End of Command History."));
+
+        Queue<String> after = getHistory();
+        assertEquals(before.size(), after.size());
+        while (!before.isEmpty()) {
+            assertEquals(before.poll(), after.poll());
+        }
+
+        Robot robot = getRobot();
+        assertEquals(2, robot.getX());
+        assertEquals(0, robot.getY());
+        assertEquals(Orientation.SOUTH, robot.getDirection());
+        assertEquals(PenOrientation.DOWN, robot.getPenOrientation());
+    }
+
+    @Test
+    public void historyWhenEmptyStillPrintsMessage() {
+        resetAppState(3);
+
+        String output = captureStdout(() -> App.executeCommand("h", true));
+        assertTrue(output.contains("End of Command History."));
+        assertEquals(0, getHistory().size());
+    }
+
+    private static void resetAppState(int size) {
+        App.initialize(size);
+        setStaticField(App.class, "commandHistory", new ArrayDeque<String>());
+        setStaticField(App.class, "isRunning", true);
+    }
+
+    private static Robot getRobot() {
+        return (Robot) getStaticField(App.class, "robot");
+    }
+
+    private static int[][] getFloor() {
+        return (int[][]) getStaticField(App.class, "floor");
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Queue<String> getHistory() {
+        return (Queue<String>) getStaticField(App.class, "commandHistory");
+    }
+
+    private static boolean getIsRunning() {
+        return (boolean) getStaticField(App.class, "isRunning");
+    }
+
+    private static Object getStaticField(Class<?> clazz, String fieldName) {
+        try {
+            Field field = clazz.getDeclaredField(fieldName);
+            field.setAccessible(true);
+            return field.get(null);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to access " + fieldName, e);
+        }
+    }
+
+    private static void setStaticField(Class<?> clazz, String fieldName, Object value) {
+        try {
+            Field field = clazz.getDeclaredField(fieldName);
+            field.setAccessible(true);
+            field.set(null, value);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to set " + fieldName, e);
+        }
+    }
+
+    private static void assertAllZeros(int[][] floor) {
+        for (int x = 0; x < floor.length; x++) {
+            for (int y = 0; y < floor[x].length; y++) {
+                assertEquals(0, floor[x][y], "floor[" + x + "][" + y + "] should be 0");
             }
         }
     }
 
-    @Test
-    public void initializeResetsPreviousState() throws Exception {
-        App.Initialize(2);
-        char[][] floor = getFloor();
-        int[][] floorStatus = getFloorStatus();
-        floor[1][1] = '*';
-        floorStatus[0][0] = 1;
-
-        App.Initialize(3);
-
-        floor = getFloor();
-        floorStatus = getFloorStatus();
-        assertEquals(3, floor.length);
-        assertEquals(3, floorStatus.length);
-        assertEquals(' ', floor[1][1]);
-        assertEquals(0, floorStatus[0][0]);
-        assertEquals(0, getIntField("robotPositionX"));
-        assertEquals(2, getIntField("robotPositionY"));
-    }
-
-    @Test
-    public void printOutputsCurrentFloorState() throws Exception {
-        App.Initialize(3);
-        char[][] floor = getFloor();
-        floor[1][2] = '*';
-
-        String output = captureStdOut(App::Print);
-        String lineSeparator = System.lineSeparator();
-
-        assertEquals(
-                "   " + lineSeparator
-                        + "  *" + lineSeparator
-                        + "   " + lineSeparator,
-                output);
-    }
-
-    @Test
-    public void mainReadsInputAndPrintsFloor() {
-        InputStream originalIn = System.in;
-        ByteArrayInputStream testIn = new ByteArrayInputStream("3\n".getBytes(StandardCharsets.UTF_8));
-
-        PrintStream originalOut = System.out;
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-        try {
-            System.setIn(testIn);
-            System.setOut(new PrintStream(outputStream, true, StandardCharsets.UTF_8));
-            App.main(new String[0]);
-        } finally {
-            System.setIn(originalIn);
-            System.setOut(originalOut);
+    private static int countMarks(int[][] floor) {
+        int count = 0;
+        for (int x = 0; x < floor.length; x++) {
+            for (int y = 0; y < floor[x].length; y++) {
+                if (floor[x][y] == 1) {
+                    count++;
+                }
+            }
         }
-
-        String output = outputStream.toString(StandardCharsets.UTF_8);
-        assertTrue(output.contains("Please enter the size you would like the floor to be (N x N): "));
-        assertTrue(output.contains("  *" + System.lineSeparator()));
+        return count;
     }
 
-    private static String captureStdOut(Runnable action) {
+    private static String captureStdout(Runnable action) {
         PrintStream originalOut = System.out;
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(buffer));
         try {
-            System.setOut(new PrintStream(outputStream, true, StandardCharsets.UTF_8));
             action.run();
+            return buffer.toString();
         } finally {
             System.setOut(originalOut);
         }
-
-        return outputStream.toString(StandardCharsets.UTF_8);
-    }
-
-    private static char[][] getFloor() throws Exception {
-        return (char[][]) getField("floor");
-    }
-
-    private static int[][] getFloorStatus() throws Exception {
-        return (int[][]) getField("floorStatus");
-    }
-
-    private static int getIntField(String fieldName) throws Exception {
-        return (int) getField(fieldName);
-    }
-
-    private static Object getField(String fieldName) throws Exception {
-        Field field = App.class.getDeclaredField(fieldName);
-        field.setAccessible(true);
-        return field.get(null);
     }
 }

@@ -8,8 +8,8 @@
   <version>0.0.1-SNAPSHOT</version>
 
   <name>COEN448_Project</name>
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
+  
+  <url>https://github.com/TylerLK/COEN448_Project</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
