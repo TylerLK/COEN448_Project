@@ -50,6 +50,16 @@ mvn test
 
 Test outputs and reports will be generated in `target/surefire-reports/`.
 
+## Code Coverage
+
+To generate code coverage reports:
+
+```bash
+mvn clean test
+mvn jacoco:report
+```
+
+Coverage reports will be generated in `target/site/jacoco/`.
 
 ## Running in VS Code
 
