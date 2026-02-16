@@ -11,13 +11,21 @@
   
   <url>https://github.com/TylerLK/COEN448_Project</url>
 
+  <!-- Project Properties -->
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.release>17</maven.compiler.release>
+
+    <!-- Test Coverage Thresholds -->
     <coverage.line.minimum>0.80</coverage.line.minimum>
     <coverage.instruction.minimum>0.80</coverage.instruction.minimum>
     <coverage.method.minimum>0.80</coverage.method.minimum>
     <coverage.branch.minimum>0.70</coverage.branch.minimum>
+
+    <!-- SonarQube Properties -->
+    <sonar.host.url>http://localhost:9000</sonar.host.url>
+    <sonar.projectKey>COEN448_Project</sonar.projectKey>
+    <sonar.projectName>COEN448_Project</sonar.projectName>
   </properties>
 
   <dependencyManagement>
@@ -51,6 +59,7 @@
     </dependency>
   </dependencies>
 
+  <!-- Jacoco Plugin -->
   <build>
     <plugins>
       <plugin>
@@ -110,6 +119,9 @@
         </executions>
       </plugin>
     </plugins>
+
+    <!-- SonarQube Plugin -->
+
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
         <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
@@ -151,6 +163,14 @@
           <artifactId>maven-project-info-reports-plugin</artifactId>
           <version>3.6.1</version>
         </plugin>
+
+        <!-- SonarQube Plugin        $env:SONAR_TOKEN="your_token"
+        mvn verify sonar:sonar-->
+        <plugin>
+        <groupId>org.sonarsource.scanner.maven</groupId>
+        <artifactId>sonar-maven-plugin</artifactId>
+        <version>4.0.0.4121</version>
+      </plugin>
       </plugins>
     </pluginManagement>
   </build>
