@@ -221,8 +221,6 @@ public class App {
 					robot.move(Integer.parseInt(commandTokens[1]), floor);
 				} catch (IllegalArgumentException e) {
 					System.out.println(e.getMessage());
-				} catch (ArrayIndexOutOfBoundsException e) {
-					System.out.println(e.getMessage());
 				}
 				break;
 			case "p":
