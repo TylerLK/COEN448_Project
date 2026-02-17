@@ -116,11 +116,13 @@ public class RobotTest {
     }
 
     @Test
-    public void moveBeyondGridWithPenUpDoesNotThrowAndUpdatesPosition() {
+    public void moveBeyondGridStopsAtBoundary() {
         int[][] floor = new int[2][2];
         Robot robot = new Robot();
 
-        assertThrows(ArrayIndexOutOfBoundsException.class, () -> robot.move(3, floor));
+        robot.move(3, floor);
+        assertEquals(0, robot.getX());
+        assertEquals(1, robot.getY());
     }
 
     private static int countMarks(int[][] floor) {

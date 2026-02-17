@@ -74,23 +74,21 @@ public class AppTest {
         );
     }
 
-    @Test
-    void moveOutsideGridThrowsArrayIndexOutOfBoundsException() {
+     @Test
+    void moveOutsideGridStopsAtBoundary() {
         int[][] floor = new int[2][2];
         Robot robot = new Robot();
 
         robot.penDown();
 
-        ArrayIndexOutOfBoundsException ex = assertThrows(
-            ArrayIndexOutOfBoundsException.class,
-            () -> robot.move(5, floor)
-        );
-
-        assertEquals(
-            "The robot tried to move outside the floor.",
-            ex.getMessage()
-        );
+        robot.move(5, floor);
+        assertEquals(0, robot.getX());
+        assertEquals(1, robot.getY());
+        assertEquals(2, countMarks(floor));
+        assertEquals(1, floor[0][0]);
+        assertEquals(1, floor[0][1]);
     }
+    
 
     @Test
     public void executeCommandPenUpAndDownAffectsRobot() {
@@ -398,6 +396,35 @@ public void executeCommandPrintRendersStars() {
         String output = captureStdout(() -> App.executeCommand("h", true));
         assertTrue(output.contains("End of Command History."));
         assertEquals(0, getHistory().size());
+    }
+
+    @Test
+    public void printMenuContainsAllCommands() {
+        String output = captureStdout(() -> App.printMenu());
+        
+        // Verify that all menu items are present
+        assertTrue(output.contains("Available Commands:"), 
+            "Should contain 'Available Commands'");
+        assertTrue(output.contains("[U|u]      |  Pen Up"), 
+            "Should contain Pen Up command");
+        assertTrue(output.contains("[D|d]      |  Pen Down"), 
+            "Should contain Pen Down command");
+        assertTrue(output.contains("[R|r]      |  Turn Right"), 
+            "Should contain Turn Right command");
+        assertTrue(output.contains("[L|l]      |  Turn Left"), 
+            "Should contain Turn Left command");
+        assertTrue(output.contains("[M s|m s]  |  Move Forward s Spaces"), 
+            "Should contain Move command");
+        assertTrue(output.contains("[P|p]      |  Print the Floor"), 
+            "Should contain Print Floor command");
+        assertTrue(output.contains("[C|c]      |  Print the Robot's Current Position and Direction"), 
+            "Should contain Current Position command");
+        assertTrue(output.contains("[I n|i n]  |  Initialize the System"), 
+            "Should contain Initialize command");
+        assertTrue(output.contains("[H|h]      |  Replay Command History"), 
+            "Should contain History command");
+        assertTrue(output.contains("[Q|q]      |  Stop the Program"), 
+            "Should contain Quit command");
     }
 
     private static void resetAppState(int size) {
