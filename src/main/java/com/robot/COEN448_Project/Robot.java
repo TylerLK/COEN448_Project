@@ -101,79 +101,66 @@ public class Robot {
      *              integer).
      * @param floor The floor (2D array) to move the robot on.
      * @throws IllegalArgumentException       if steps is negative.
-     * @throws ArrayIndexOutOfBoundsException if the robot moves outside the floor.
      */
     public void move(int steps, int[][] floor) {
         if (steps < 0) {
             throw new IllegalArgumentException("Steps must be a non-negative integer.");
         }
+        int dx = 0;
+        int dy = 0;
 
-        int oldX = x;
-        int oldY = y;
-        int newX;
-        int newY;
+        // update the change in x and y based on the current direction
         switch (direction) {
             case NORTH:
-                newY = y + steps;
-                if (newY >= floor.length) {
-                    throw new ArrayIndexOutOfBoundsException("The robot tried to move outside the floor.");
-                }
-                this.y = newY;
+                dy = 1;
                 break;
             case EAST:
-                newX = x + steps;
-                if (newX >= floor.length) {
-                    throw new ArrayIndexOutOfBoundsException("The robot tried to move outside the floor.");
-                }
-                this.x = newX;
+                dx = 1;
                 break;
             case SOUTH:
-                newY = y - steps;
-                if (newY < 0) {
-                    throw new ArrayIndexOutOfBoundsException("The robot tried to move outside the floor.");
-                }
-                this.y = newY;
+                dy = -1;
                 break;
             case WEST:
-                newX = x - steps;
-                if (newX < 0) {
-                    throw new ArrayIndexOutOfBoundsException("The robot tried to move outside the floor.");
-                }
-                this.x = newX;
+                dx = -1;
                 break;
         }
 
-        // After updating the position of the robot, we fill in the path it has taken if the pen is down
-        if (penOrientation == PenOrientation.DOWN) {
-            // Fill in the horizontal path (handles movement in both positive and negative x
-            // directions)
-            // if the x position has changed
-            if (oldX != this.x) {
-                if (oldX > this.x) {
-                    for (int i = oldX; i >= this.x; i--) {
-                        floor[i][oldY] = 1;
-                    }
-                } else {
-                    for (int i = oldX; i <= this.x; i++) {
-                        floor[i][oldY] = 1;
-                    }
-                }
+        boolean hasMoved = false;
+        // iteratively move the robot while also updating the floor
+        for (int i = 0; i < steps; i++) {
+            int nextX = x + dx;
+            int nextY = y + dy;
+            if (!isInsideFloor(nextX, nextY, floor)) {
+                break;
             }
-            // Fill in the vertical path (handles movement in both positive and negative y
-            // directions)
-            // if the y position has changed
-            if (oldY != this.y) {
-                if (oldY > this.y) {
-                    for (int i = oldY; i >= this.y; i--) {
-                        floor[oldX][i] = 1;
-                    }
-                } else {
-                    for (int i = oldY; i <= this.y; i++) {
-                        floor[oldX][i] = 1;
-                    }
+
+            if (penOrientation == PenOrientation.DOWN) {
+                // update the initial tile they were on
+                if (!hasMoved) {
+                    floor[x][y] = 1;
                 }
+
+                // update the new tile they move to
+                x = nextX;
+                y = nextY;
+                floor[x][y] = 1;
+            } else {
+                x = nextX;
+                y = nextY;
             }
+            hasMoved = true;
         }
+    }
+
+    /**
+     * Checks if the given positions are inside the floor.
+     * @param x The x-axis position to check.
+     * @param y The y-axis position to check.
+     * @param floor The floor (2D array) to check.
+     * @return True if the new positions would be inside the floor, false otherwise.
+     */
+    private boolean isInsideFloor(int x, int y, int[][] floor) {
+        return x >= 0 && x < floor.length && y >= 0 && y < floor[x].length;
     }
 
     /**
