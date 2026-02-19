@@ -50,16 +50,46 @@ mvn test
 
 Test outputs and reports will be generated in `target/surefire-reports/`.
 
-## Code Coverage
+## Code Coverage (Jacoco)
 
 To generate code coverage reports:
 
 ```bash
-mvn clean test
-mvn jacoco:report
+mvn clean test jacoco:report
 ```
 
 Coverage reports will be generated in `target/site/jacoco/`.
+
+## Static Analysis (SonarQube)
+
+To perform static code analysis using SonarQube:
+
+### 1. Start SonarQube
+If you have Docker Desktop installed, run:
+```bash
+docker run -d --name sonarqube -p 9000:9000 sonarqube:lts-community
+```
+
+### 2. Configure SonarQube
+1. Open [http://localhost:9000](http://localhost:9000) (User: `admin`, Pass: `admin`).
+2. Follow prompts to change the password.
+3. Follow the steps for creating a new project manually called COEN448_Project (must be called this) and then follow the steps for generating a token with no expiration date.
+
+### 3. Run Analysis (via Docker)
+Run the following command from the project root. This command uses a Dockerized Maven environment, ensuring consistent results across Windows and macOS:
+
+**macOS / Linux / Windows (PowerShell):**
+```bash
+docker run --rm -v "${PWD}:/usr/src/mymaven" -w /usr/src/mymaven maven:3.8-openjdk-17-slim mvn verify sonar:sonar -Dsonar.projectKey=COEN448_Project -Dsonar.host.url=http://host.docker.internal:9000 -Dsonar.login=YOUR_TOKEN
+```
+*(Note: `${PWD}` automatically detects your current folder, so this command works no matter where you saved the project.)*
+
+**Windows (Git Bash):**
+Git Bash requires a special flag to prevent it from mangling paths. Use this exact command and replace YOUR_TOKEN with your actual SonarQube token:
+```bash
+MSYS_NO_PATHCONV=1 docker run --rm -v "${PWD}:/usr/src/mymaven" -w /usr/src/mymaven maven:3.8-openjdk-17-slim mvn verify sonar:sonar -Dsonar.projectKey=COEN448_Project -Dsonar.host.url=http://host.docker.internal:9000 -Dsonar.login=YOUR_TOKEN
+```
+*(Note: If you still see "Missing Project" errors, double-check that you are in the folder containing `pom.xml`.)*
 
 ## Running in VS Code
 
