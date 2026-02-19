@@ -94,16 +94,14 @@ public class Robot {
         int dy = 0;
 
         // update the change in x and y based on the current direction
-        dx = switch (direction) {
-            case EAST -> 1;
-            case WEST -> -1;
-            case NORTH, SOUTH -> 0;
+        int[] delta = switch (direction) {
+            case EAST -> new int[] { 1, 0 };
+            case WEST -> new int[] { -1, 0 };
+            case NORTH -> new int[] { 0, 1 };
+            case SOUTH -> new int[] { 0, -1 };
         };
-        dy = switch (direction) {
-            case NORTH -> 1;
-            case SOUTH -> -1;
-            case EAST, WEST -> 0;
-        };
+        dx = delta[0];
+        dy = delta[1];
 
         boolean hasMoved = false;
         // iteratively move the robot while also updating the floor
