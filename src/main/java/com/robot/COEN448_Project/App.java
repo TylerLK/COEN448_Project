@@ -282,11 +282,21 @@ public class App {
 		}
 	}
 
+	/**
+	 * Checks if the command is one of the valid single token commands.
+	 * @param caseBlindCommand The command to check.
+	 * @return {@code true} if the command is valid; {@code false} otherwise.
+	 */
 	private static boolean isSingleTokenCommand(String caseBlindCommand) {
 		Set<String> validSingleTokenCommands = Set.of("u", "d", "r", "l", "p", "c", "q", "h");
 		return validSingleTokenCommands.contains(caseBlindCommand);
 	}
 
+	/**
+	 * Checks if the commandLength is 1, meaning that the command is valid.
+	 * @param commandLength The length of the command.
+	 * @return {@code true} if the command is valid; {@code false} otherwise.
+	 */
 	private static boolean isValidNoArgumentCommand(int commandLength) {
 		if (commandLength == 1) {
 			return true;
@@ -296,6 +306,11 @@ public class App {
 		return false;
 	}
 
+	/**
+	 * Checks if the distance command is valid.
+	 * @param commandTokens The command tokens.
+	 * @return {@code true} if the command is valid; {@code false} otherwise.
+	 */
 	private static boolean isValidDistanceCommand(String[] commandTokens) {
 		if (commandTokens.length != 2) {
 			System.out.println("Invalid Command. Incorrect number of arguments for this command.");
@@ -315,6 +330,11 @@ public class App {
 		return false;
 	}
 
+	/**
+	 * Checks if the initialize command is valid.
+	 * @param commandTokens The command tokens.
+	 * @return {@code true} if the command is valid; {@code false} otherwise.
+	 */
 	private static boolean isValidInitializeCommand(String[] commandTokens) {
 		if (commandTokens.length != 2) {
 			System.out.println("Invalid Command. Incorrect number of arguments for this command.");
