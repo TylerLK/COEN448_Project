@@ -19,6 +19,7 @@ import java.util.Set;
  */
 public class App {
 	private static final boolean SHOULD_PRINT_MENU = true;
+	private static final Set<String> VALID_SINGLE_TOKEN_COMMANDS = Set.of("u", "d", "r", "l", "p", "c", "q", "h");
 	private static int[][] floor;
 	private static Robot robot;
 	private static boolean isRunning = true;
@@ -288,8 +289,7 @@ public class App {
 	 * @return {@code true} if the command is valid; {@code false} otherwise.
 	 */
 	private static boolean isSingleTokenCommand(String caseBlindCommand) {
-		Set<String> validSingleTokenCommands = Set.of("u", "d", "r", "l", "p", "c", "q", "h");
-		return validSingleTokenCommands.contains(caseBlindCommand);
+		return VALID_SINGLE_TOKEN_COMMANDS.contains(caseBlindCommand);
 	}
 
 	/**
