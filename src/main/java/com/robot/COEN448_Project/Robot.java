@@ -54,20 +54,12 @@ public class Robot {
      * Turns the robot right. Adjusts based on current direction.
      */
     public void turnRight() {
-        switch (direction) {
-            case NORTH:
-                direction = Orientation.EAST;
-                break;
-            case EAST:
-                direction = Orientation.SOUTH;
-                break;
-            case SOUTH:
-                direction = Orientation.WEST;
-                break;
-            case WEST:
-                direction = Orientation.NORTH;
-                break;
-        }
+        direction = switch (direction) {
+            case NORTH -> Orientation.EAST;
+            case EAST -> Orientation.SOUTH;
+            case SOUTH -> Orientation.WEST;
+            case WEST -> Orientation.NORTH;
+        };
     }
 
     /**
@@ -76,20 +68,12 @@ public class Robot {
      * Turns the robot left. Adjusts based on current direction.
      */
     public void turnLeft() {
-        switch (direction) {
-            case NORTH:
-                direction = Orientation.WEST;
-                break;
-            case EAST:
-                direction = Orientation.NORTH;
-                break;
-            case SOUTH:
-                direction = Orientation.EAST;
-                break;
-            case WEST:
-                direction = Orientation.SOUTH;
-                break;
-        }
+        direction = switch (direction) {
+            case NORTH -> Orientation.WEST;
+            case EAST -> Orientation.NORTH;
+            case SOUTH -> Orientation.EAST;
+            case WEST -> Orientation.SOUTH;
+        };
     }
 
     /**
@@ -110,20 +94,16 @@ public class Robot {
         int dy = 0;
 
         // update the change in x and y based on the current direction
-        switch (direction) {
-            case NORTH:
-                dy = 1;
-                break;
-            case EAST:
-                dx = 1;
-                break;
-            case SOUTH:
-                dy = -1;
-                break;
-            case WEST:
-                dx = -1;
-                break;
-        }
+        dx = switch (direction) {
+            case EAST -> 1;
+            case WEST -> -1;
+            case NORTH, SOUTH -> 0;
+        };
+        dy = switch (direction) {
+            case NORTH -> 1;
+            case SOUTH -> -1;
+            case EAST, WEST -> 0;
+        };
 
         boolean hasMoved = false;
         // iteratively move the robot while also updating the floor
