@@ -4,6 +4,7 @@ package com.robot.COEN448_Project;
 import java.util.Scanner;
 import java.util.Queue;
 import java.util.ArrayDeque;
+import java.util.Set;
 
 /**
  * App Class
@@ -17,7 +18,8 @@ import java.util.ArrayDeque;
  * @commandHistory Queue to keep track of the history of user command input.
  */
 public class App {
-	private final static boolean SHOULD_PRINT_MENU = true;
+	private static final boolean SHOULD_PRINT_MENU = true;
+	private static final Set<String> VALID_SINGLE_TOKEN_COMMANDS = Set.of("u", "d", "r", "l", "p", "c", "q", "h");
 	private static int[][] floor;
 	private static Robot robot;
 	private static boolean isRunning = true;
@@ -266,62 +268,90 @@ public class App {
 
 		String caseBlindCommand = commandTokens[0].toLowerCase();
 
-		// We check single commands, then commands with arguments.
+		if (isSingleTokenCommand(caseBlindCommand)) {
+			return isValidNoArgumentCommand(commandTokens.length);
+		}
+
 		switch (caseBlindCommand) {
-			case "u":
-			case "d":
-			case "r":
-			case "l":
-			case "p":
-			case "c":
-			case "q":
-			case "h":
-				if (commandTokens.length == 1) {
-					return true;
-				} else {
-					System.out.println("Invalid Command. Too many arguments for this command.");
-					return false;
-				}
-
 			case "m":
-				if (commandTokens.length != 2) {
-					System.out.println("Invalid Command. Incorrect number of arguments for this command.");
-					return false;
-				}
-				try {
-					int s = Integer.parseInt(commandTokens[1]);
-					if (s >= 0) {
-						return true;
-					} else {
-						System.out.println("Invalid Command. The distance must be a non-negative integer.");
-						return false;
-					}
-				} catch (NumberFormatException e) {
-					System.out.println("Invalid Command. The distance must be a non-negative integer.");
-					return false;
-				}
-
+				return isValidDistanceCommand(commandTokens);
 			case "i":
-				if (commandTokens.length != 2) {
-					System.out.println("Invalid Command. Incorrect number of arguments for this command.");
-					return false;
-				}
-				try {
-					int n = Integer.parseInt(commandTokens[1]);
-					if (n > 0) {
-						return true;
-					} else {
-						System.out.println("Invalid Command. The size must be a positive integer.");
-						return false;
-					}
-				} catch (NumberFormatException e) {
-					System.out.println("Invalid Command. The size must be a positive integer.");
-					return false;
-				}
+				return isValidInitializeCommand(commandTokens);
 			default:
 				System.out.println("Invalid Command. Please try again.");
 				return false;
 		}
+	}
+
+	/**
+	 * Checks if the command is one of the valid single token commands.
+	 * @param caseBlindCommand The command to check.
+	 * @return {@code true} if the command is valid; {@code false} otherwise.
+	 */
+	private static boolean isSingleTokenCommand(String caseBlindCommand) {
+		return VALID_SINGLE_TOKEN_COMMANDS.contains(caseBlindCommand);
+	}
+
+	/**
+	 * Checks if the commandLength is 1, meaning that the command is valid.
+	 * @param commandLength The length of the command.
+	 * @return {@code true} if the command is valid; {@code false} otherwise.
+	 */
+	private static boolean isValidNoArgumentCommand(int commandLength) {
+		if (commandLength == 1) {
+			return true;
+		}
+
+		System.out.println("Invalid Command. Too many arguments for this command.");
+		return false;
+	}
+
+	/**
+	 * Checks if the distance command is valid.
+	 * @param commandTokens The command tokens.
+	 * @return {@code true} if the command is valid; {@code false} otherwise.
+	 */
+	private static boolean isValidDistanceCommand(String[] commandTokens) {
+		if (commandTokens.length != 2) {
+			System.out.println("Invalid Command. Incorrect number of arguments for this command.");
+			return false;
+		}
+
+		try {
+			int s = Integer.parseInt(commandTokens[1]);
+			if (s >= 0) {
+				return true;
+			}
+		} catch (NumberFormatException e) {
+			// Fall through to shared error message.
+		}
+
+		System.out.println("Invalid Command. The distance must be a non-negative integer.");
+		return false;
+	}
+
+	/**
+	 * Checks if the initialize command is valid.
+	 * @param commandTokens The command tokens.
+	 * @return {@code true} if the command is valid; {@code false} otherwise.
+	 */
+	private static boolean isValidInitializeCommand(String[] commandTokens) {
+		if (commandTokens.length != 2) {
+			System.out.println("Invalid Command. Incorrect number of arguments for this command.");
+			return false;
+		}
+
+		try {
+			int n = Integer.parseInt(commandTokens[1]);
+			if (n > 0) {
+				return true;
+			}
+		} catch (NumberFormatException e) {
+			// Fall through to shared error message.
+		}
+
+		System.out.println("Invalid Command. The size must be a positive integer.");
+		return false;
 	}
 
 }
