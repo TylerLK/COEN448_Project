@@ -17,10 +17,10 @@
     <maven.compiler.release>17</maven.compiler.release>
 
     <!-- Test Coverage Thresholds -->
-    <coverage.line.minimum>0.80</coverage.line.minimum>
-    <coverage.instruction.minimum>0.80</coverage.instruction.minimum>
-    <coverage.method.minimum>0.80</coverage.method.minimum>
-    <coverage.branch.minimum>0.70</coverage.branch.minimum>
+    <coverage.line.minimum>0.90</coverage.line.minimum>
+    <coverage.instruction.minimum>0.90</coverage.instruction.minimum>
+    <coverage.method.minimum>0.90</coverage.method.minimum>
+    <coverage.branch.minimum>0.90</coverage.branch.minimum>
 
     <!-- SonarQube Properties -->
     <sonar.host.url>http://localhost:9000</sonar.host.url>
