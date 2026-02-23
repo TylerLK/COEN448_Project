@@ -122,7 +122,7 @@ AI Usage Claim
 
 *Tools Used*
 
-The primary tools used throughout the development and testing of this phase of our project (i.e., Task #1) were GitHub Copilot and Codex (OpenAI). More specifically, the primary usage of GitHub Copilot was performed through marketplace extensions on our team’s varying IDEs (e.g., VSCode, Eclipse, etc.). Furthermore, the integrated AI code review feature on our GitHub repository was employed during every Pull Request. For the latter case, the embedded GitHub version normally catches minor spelling errors or improper formatting. Finally, in terms of code generation, the two main uses for generative AI while vibe coding were for Test Case Development and Application refactoring.
+The primary tools used throughout the development and testing of this phase of our project (i.e., Task #1) were GitHub Copilot and Codex (OpenAI). More specifically, the primary usage of GitHub Copilot was performed through marketplace extensions on our team’s varying IDEs (e.g., VSCode, Eclipse, etc.). Furthermore, the integrated AI code review feature on our GitHub repository was employed during every Pull Request. For the latter case, the embedded GitHub version normally catches minor spelling errors or improper formatting. Finally, in terms of code generation, the two main uses for generative AI while vibe coding were for test case development and targeted application refactoring
 
 ### Prompts
 
@@ -267,3 +267,36 @@ Produce an `App_refactored.java` file containing clearly denoted changes.
 - Keep utility function generation to a minimum.
 
 
+---------------------------------------------------end of prompt--------------------------------------------------------------
+
+#### SonarQube isValidCommand() Complexity Reduction
+
+Refactor the isValidCommand to reduce its Cognitive Complexity from 21 to the 15 allowed.
+
+---------------------------------------------------end of prompt--------------------------------------------------------------
+
+#### Additional test case for the printMenu() method
+
+**COSTAR Prompt**
+
+**Context:**
+You are provided with the current code of the App.java and AppTest.java 
+
+**Outcome:**
+We need to write a test case in AppTest.java to test efficiently the printMenu() method implemented in App.java
+
+**Steps:**
+1. Read the files App.java and AppTest.java completely
+2. Add a minimal number of test cases to test everything related to the printMenu() method
+3. Check the final list of tests to ensure you do not have duplicates. If duplicate tests exist, report them in the conversation and remove them to avoid redundancy.
+
+**Tools:**
+- Junit 5
+
+**Audience:**
+- Teaching Assistants evaluating correctness and coverage
+
+**Relevance:**
+The method needs to be fully tested to ensure sufficient test coverage.
+
+---------------------------------------------------end of prompt--------------------------------------------------------------
