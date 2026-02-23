@@ -225,7 +225,11 @@ Failure to correctly test Task 1 may result in:
 - Poor foundation for the next step of the project (code coverage analysis)
 High-quality unit tests here reduce debugging cost and increase confidence in later milestones
 
----------------------------------------------------end of prompt--------------------------------------------------------------
+---
+
+<p align="center"><em>End of prompt</em></p>
+
+---
 
 #### Application Refactoring
 
@@ -267,13 +271,19 @@ Produce an `App_refactored.java` file containing clearly denoted changes.
 - Keep utility function generation to a minimum.
 
 
----------------------------------------------------end of prompt--------------------------------------------------------------
+---
+<p align="center"><em>End of prompt</em></p>
+
+---
 
 #### SonarQube isValidCommand() Complexity Reduction
 
 Refactor the isValidCommand to reduce its Cognitive Complexity from 21 to the 15 allowed.
 
----------------------------------------------------end of prompt--------------------------------------------------------------
+---
+<p align="center"><em>End of prompt</em></p>
+
+---
 
 #### Additional test case for the printMenu() method
 
@@ -299,4 +309,12 @@ We need to write a test case in AppTest.java to test efficiently the printMenu()
 **Relevance:**
 The method needs to be fully tested to ensure sufficient test coverage.
 
----------------------------------------------------end of prompt--------------------------------------------------------------
+
+---
+<p align="center"><em>End of prompt</em></p>
+
+---
+
+
+
+
