@@ -15,6 +15,8 @@ public class QATest {
 
 	private Robot robot;
 	private int[][] standardFloor;
+	private CommandParser parser;
+	private CommandExecutor executor;
 	private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 	private final PrintStream originalOut = System.out;
 
@@ -23,7 +25,9 @@ public class QATest {
 		System.setOut(new PrintStream(outContent));
 		robot = new Robot();
 		standardFloor = new int[10][10];
-		App.initialize(10);
+		parser = new CommandParser();
+		executor = new CommandExecutor(parser);
+		executor.initialize(10);
 	}
 
 	@AfterEach
@@ -71,23 +75,23 @@ public class QATest {
 
 	@Test
 	public void testInvalidGridInitializationBounds() {
-		assertFalse(App.isValidCommand("I 0"), "Grid size 0 should be rejected.");
-		assertFalse(App.isValidCommand("I -5"), "Negative grid sizes should be rejected.");
+		assertFalse(parser.isValidCommand("I 0"), "Grid size 0 should be rejected.");
+		assertFalse(parser.isValidCommand("I -5"), "Negative grid sizes should be rejected.");
 	}
 
 	@Test
 	public void testValidMinimumGridInitialization() {
-		assertTrue(App.isValidCommand("I 1"), "Grid size 1x1 should be accepted.");
+		assertTrue(parser.isValidCommand("I 1"), "Grid size 1x1 should be accepted.");
 	}
 
 	@Test
 	public void testInvalidMovementBounds() {
-		assertFalse(App.isValidCommand("M -5"), "Negative movement steps should be rejected by the parser.");
+		assertFalse(parser.isValidCommand("M -5"), "Negative movement steps should be rejected by the parser.");
 	}
 
 	@Test
 	public void testValidZeroMovement() {
-		assertTrue(App.isValidCommand("M 0"), "Movement of 0 steps should be accepted as valid syntax.");
+		assertTrue(parser.isValidCommand("M 0"), "Movement of 0 steps should be accepted as valid syntax.");
 	}
 
 	// Tests transplanted from FunctionalBlackBoxTest.java
@@ -165,12 +169,12 @@ public class QATest {
 
 	@Test
 	public void testPrintPositionCommand() {
-		App.executeCommand("R", true);
-		App.executeCommand("M 2", true);
+		executor.executeCommand("R", true);
+		executor.executeCommand("M 2", true);
 
 		outContent.reset();
 
-		App.executeCommand("C", true);
+		executor.executeCommand("C", true);
 
 		String output = outContent.toString();
 		assertTrue(output.contains("Position: 2, 0 - Pen: UP - Facing: EAST"),
@@ -179,14 +183,14 @@ public class QATest {
 
 	@Test
 	public void testInitializeCommandResetsSystem() {
-		App.executeCommand("D", true);
-		App.executeCommand("R", true);
-		App.executeCommand("M 4", true);
+		executor.executeCommand("D", true);
+		executor.executeCommand("R", true);
+		executor.executeCommand("M 4", true);
 
-		App.executeCommand("I 8", true);
+		executor.executeCommand("I 8", true);
 
 		outContent.reset();
-		App.executeCommand("C", true);
+		executor.executeCommand("C", true);
 		String output = outContent.toString();
 
 		assertTrue(output.contains("Position: 0, 0 - Pen: UP - Facing: NORTH"),
@@ -195,12 +199,12 @@ public class QATest {
 
 	@Test
 	public void testPrintFloorCommand() {
-		App.executeCommand("D", true);
-		App.executeCommand("M 2", true);
+		executor.executeCommand("D", true);
+		executor.executeCommand("M 2", true);
 
 		outContent.reset();
 
-		App.executeCommand("P", true);
+		executor.executeCommand("P", true);
 
 		String output = outContent.toString();
 		assertTrue(output.contains("*"), "The P command should print the floor and display asterisks for marked tiles.");
@@ -208,13 +212,13 @@ public class QATest {
 
 	@Test
 	public void testHistoryCommandReplaysSteps() {
-		App.executeCommand("I 5", true);
-		App.executeCommand("R", true);
-		App.executeCommand("M 1", true);
+		executor.executeCommand("I 5", true);
+		executor.executeCommand("R", true);
+		executor.executeCommand("M 1", true);
 
 		outContent.reset();
 
-		App.executeCommand("H", true);
+		executor.executeCommand("H", true);
 
 		String output = outContent.toString();
 		assertTrue(output.contains("End of Command History."),
@@ -225,65 +229,65 @@ public class QATest {
 
 	@Test
 	public void testIsValidCommand_NullCondition() {
-		assertFalse(App.isValidCommand(null), "Null command should return false.");
+		assertFalse(parser.isValidCommand(null), "Null command should return false.");
 	}
 
 	@Test
 	public void testIsValidCommand_EmptyCondition() {
-		assertFalse(App.isValidCommand("   "), "Blank command should return false.");
+		assertFalse(parser.isValidCommand("   "), "Blank command should return false.");
 	}
 
 	@Test
 	public void testShouldAddToHistory_AllTrue() {
-		App.executeCommand("u", true);
+		executor.executeCommand("u", true);
 	}
 
 	@Test
 	public void testShouldAddToHistory_FirstConditionFalse() {
-		App.executeCommand("u", false);
+		executor.executeCommand("u", false);
 	}
 
 	@Test
 	public void testShouldAddToHistory_SecondConditionFalse() {
-		App.executeCommand("q", true);
+		executor.executeCommand("q", true);
 	}
 
 	@Test
 	public void testShouldAddToHistory_ThirdConditionFalse() {
-		App.executeCommand("h", true);
+		executor.executeCommand("h", true);
 	}
 
 	@Test
 	public void testShouldAddToHistory_FirstAndSecondConditionFalse() {
-		App.executeCommand("q", false);
+		executor.executeCommand("q", false);
 	}
 
 	@Test
 	public void testIsValidCommand_TooManyArgumentsBranch() {
-		assertFalse(App.isValidCommand("M 5 extra"), "Should reject > 2 tokens.");
+		assertFalse(parser.isValidCommand("M 5 extra"), "Should reject > 2 tokens.");
 	}
 
 	@Test
 	public void testIsValidCommand_SingleTokenBranch() {
-		assertTrue(App.isValidCommand("U"), "Should accept valid single token.");
-		assertFalse(App.isValidCommand("U 5"), "Should reject single token command with extra args.");
+		assertTrue(parser.isValidCommand("U"), "Should accept valid single token.");
+		assertFalse(parser.isValidCommand("U 5"), "Should reject single token command with extra args.");
 	}
 
 	@Test
 	public void testIsValidCommand_SwitchBranchM() {
-		assertTrue(App.isValidCommand("M 5"), "Should accept valid M command.");
-		assertFalse(App.isValidCommand("M string"), "Should reject non-integer M command.");
+		assertTrue(parser.isValidCommand("M 5"), "Should accept valid M command.");
+		assertFalse(parser.isValidCommand("M string"), "Should reject non-integer M command.");
 	}
 
 	@Test
 	public void testIsValidCommand_SwitchBranchI() {
-		assertTrue(App.isValidCommand("I 10"), "Should accept valid I command.");
-		assertFalse(App.isValidCommand("I string"), "Should reject non-integer I command.");
+		assertTrue(parser.isValidCommand("I 10"), "Should accept valid I command.");
+		assertFalse(parser.isValidCommand("I string"), "Should reject non-integer I command.");
 	}
 
 	@Test
 	public void testIsValidCommand_SwitchBranchDefault() {
-		assertFalse(App.isValidCommand("X"), "Should reject unknown command.");
-		assertFalse(App.isValidCommand("X 5"), "Should reject unknown command with args.");
+		assertFalse(parser.isValidCommand("X"), "Should reject unknown command.");
+		assertFalse(parser.isValidCommand("X 5"), "Should reject unknown command with args.");
 	}
 }
