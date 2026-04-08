@@ -258,7 +258,7 @@ public class AppTest {
     @Test
     public void executeCommandNonNumericInitArgumentThrows() {
         resetAppState(3);
- String output = captureStdout(() -> executor.executeCommand("i x", true));
+        String output = captureStdout(() -> executor.executeCommand("i x", true));
         assertTrue(output.contains("Invalid Command. The size must be a positive integer."));
     }
 
