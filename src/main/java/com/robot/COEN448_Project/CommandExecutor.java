@@ -138,11 +138,9 @@ public class CommandExecutor {
      * [H|h] ==> Replay all the steps in the history since the last program start.
      */
     public void history() {
-        int historySize = commandHistory.size();
-        for (int i = 0; i < historySize; i++) {
+        for (int i = 0; i < commandHistory.size(); i++) {
             String command = commandHistory.poll();
-            executeCommand(command, false);
-            commandHistory.add(command);
+            executeCommand(command, true);
         }
         System.out.println("End of Command History.");
     }
