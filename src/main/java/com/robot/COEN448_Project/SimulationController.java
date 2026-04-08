@@ -14,9 +14,13 @@ public class SimulationController {
     private final Scanner scanner;
 
     public SimulationController() {
-        this.parser = new CommandParser();
+        this(new CommandParser(), new Scanner(System.in));
+    }
+
+    public SimulationController(CommandParser parser, Scanner scanner) {
+        this.parser = parser;
         this.executor = new CommandExecutor(this.parser);
-        this.scanner = new Scanner(System.in);
+        this.scanner = scanner;
     }
 
     /**
