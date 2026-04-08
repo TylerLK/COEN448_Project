@@ -23,7 +23,7 @@ public class CommandParser {
             return false;
         }
 
-        String[] commandTokens = command.trim().split(" ");
+        String[] commandTokens = command.trim().split("\\s+");
 
         if (commandTokens.length > 2) {
             System.out.println("Invalid Command. Too many arguments for this command.");
