@@ -32,7 +32,7 @@ public class CommandExecutor {
         }
 
         // Parse the user's command into tokens.
-        String[] commandTokens = command.trim().split(" ");
+        String[] commandTokens = command.trim().split("\\s+");
 
         // Ensure that the command is case blind.
         String caseBlindCommand = commandTokens[0].toLowerCase();
