@@ -242,7 +242,7 @@ public class AppTest {
    
 
     @Test
-    public void executeCommandInitWithExtraArgsUsesFirstArg() {
+    public void executeCommandInitWithExtraArgsDoesNotChangeAppState() {
         resetAppState(3);
 
         executor.executeCommand("i 4 extra", true);
