@@ -12,12 +12,24 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.robot.COEN448_Project.enums.Orientation;
 import com.robot.COEN448_Project.enums.PenOrientation;
 
 public class AppTest {
+    private CommandParser parser;
+    private CommandExecutor executor;
+    private SimulationController controller;
+
+    @BeforeEach
+    public void setUp() {
+        parser = new CommandParser();
+        executor = new CommandExecutor(parser);
+        controller = new SimulationController();
+    }
+
 
     @Test
     public void initializeCreatesCleanFloorAndRobot() {
@@ -41,8 +53,8 @@ public class AppTest {
     public void executeCommandMovesAndMarksWithPenDown() {
         resetAppState(5);
 
-        App.executeCommand("D", true);
-        App.executeCommand("m 2", true);
+        executor.executeCommand("D", true);
+        executor.executeCommand("m 2", true);
 
         Robot robot = getRobot();
         assertEquals(0, robot.getX());
@@ -94,10 +106,10 @@ public class AppTest {
     public void executeCommandPenUpAndDownAffectsRobot() {
         resetAppState(3);
 
-        App.executeCommand("d", true);
+        executor.executeCommand("d", true);
         assertEquals(PenOrientation.DOWN, getRobot().getPenOrientation());
 
-        App.executeCommand("u", true);
+        executor.executeCommand("u", true);
         assertEquals(PenOrientation.UP, getRobot().getPenOrientation());
     }
 
@@ -105,10 +117,10 @@ public class AppTest {
     public void executeCommandTurnsUpdateDirection() {
         resetAppState(3);
 
-        App.executeCommand("r", true);
+        executor.executeCommand("r", true);
         assertEquals(Orientation.EAST, getRobot().getDirection());
 
-        App.executeCommand("l", true);
+        executor.executeCommand("l", true);
         assertEquals(Orientation.NORTH, getRobot().getDirection());
     }
 
@@ -116,8 +128,8 @@ public class AppTest {
     public void executeCommandMoveZeroDoesNotMarkOrMove() {
         resetAppState(3);
 
-        App.executeCommand("d", true);
-        App.executeCommand("m 0", true);
+        executor.executeCommand("d", true);
+        executor.executeCommand("m 0", true);
 
         Robot robot = getRobot();
         assertEquals(0, robot.getX());
@@ -129,7 +141,7 @@ public class AppTest {
     public void executeCommandNegativeMovePrintsInvalidCommand() {
         resetAppState(3);
 
-        String output = captureStdout(() -> App.executeCommand("m -1", true));
+        String output = captureStdout(() -> executor.executeCommand("m -1", true));
         assertTrue(output.contains("Invalid Command. The distance must be a non-negative integer."));
     }
 
@@ -137,8 +149,8 @@ public class AppTest {
     public void executeCommandTrimsInputAndAcceptsUppercase() {
         resetAppState(3);
 
-        App.executeCommand("  d  ", true);
-        App.executeCommand("  M 1  ", true);
+        executor.executeCommand("  d  ", true);
+        executor.executeCommand("  M 1  ", true);
 
         Robot robot = getRobot();
         assertEquals(0, robot.getX());
@@ -150,7 +162,7 @@ public class AppTest {
     public void executeCommandInvalidCommandPrintsMessage() {
         resetAppState(3);
 
-        String output = captureStdout(() -> App.executeCommand("x", true));
+        String output = captureStdout(() -> executor.executeCommand("x", true));
         assertTrue(output.contains("Invalid Command. Please try again."));
 
         Robot robot = getRobot();
@@ -163,7 +175,7 @@ public class AppTest {
     @Test
     public void executeCommandMissingMoveArgumentThrows() {
         resetAppState(3);
-        String output = captureStdout(() -> App.executeCommand("m", true));
+        String output = captureStdout(() -> executor.executeCommand("m", true));
         assertTrue(output.contains("Invalid Command. Incorrect number of arguments for this command."));
 
         Robot robot = getRobot();
@@ -177,7 +189,7 @@ public class AppTest {
     @Test
     public void executeCommandMissingInitArgumentThrows() {
         resetAppState(3);
-        String output = captureStdout(() -> App.executeCommand("i", true));
+        String output = captureStdout(() -> executor.executeCommand("i", true));
         assertTrue(output.contains("Invalid Command. Incorrect number of arguments for this command."));
 
          Robot robot = getRobot();
@@ -192,7 +204,7 @@ public class AppTest {
     @Test
     public void executeCommandNonNumericMoveArgumentThrows() {
         resetAppState(3);
-        String output = captureStdout(() -> App.executeCommand("m x", true));
+        String output = captureStdout(() -> executor.executeCommand("m x", true));
         assertTrue(output.contains("Invalid Command. The distance must be a non-negative integer."));
 
         Robot robot = getRobot();
@@ -207,17 +219,17 @@ public class AppTest {
     public void executeCommandEmptyOrBlankCommandPrintsMessage() {
         resetAppState(3);
 
-        String emptyOutput = captureStdout(() -> App.executeCommand("", true));
+        String emptyOutput = captureStdout(() -> executor.executeCommand("", true));
         assertTrue(emptyOutput.contains("Empty Command. Please try again."));
 
-        String blankOutput = captureStdout(() -> App.executeCommand("   ", true));
+        String blankOutput = captureStdout(() -> executor.executeCommand("   ", true));
         assertTrue(blankOutput.contains("Empty Command. Please try again."));
     }
 
     @Test
     public void executeCommandNullCommandThrows() {
         resetAppState(3);
-        String output = captureStdout(() -> App.executeCommand(null, true));
+        String output = captureStdout(() -> executor.executeCommand(null, true));
         assertTrue(output.contains("Empty Command. Please try again."));
 
         Robot robot = getRobot();
@@ -233,7 +245,7 @@ public class AppTest {
     public void executeCommandInitWithExtraArgsUsesFirstArg() {
         resetAppState(3);
 
-        App.executeCommand("i 4 extra", true);
+        executor.executeCommand("i 4 extra", true);
 
         int[][] floor = getFloor();
         assertEquals(3, floor.length);
@@ -246,14 +258,14 @@ public class AppTest {
     @Test
     public void executeCommandNonNumericInitArgumentThrows() {
         resetAppState(3);
- String output = captureStdout(() -> App.executeCommand("i x", true));
+ String output = captureStdout(() -> executor.executeCommand("i x", true));
         assertTrue(output.contains("Invalid Command. The size must be a positive integer."));
     }
 
     @Test
     public void executeCommandNegativeInitArgumentThrows() {
         resetAppState(3);
-        String output = captureStdout(() -> App.executeCommand("i -1", true));
+        String output = captureStdout(() -> executor.executeCommand("i -1", true));
         assertTrue(output.contains("Invalid Command. The size must be a positive integer."));
 
     }
@@ -261,12 +273,12 @@ public class AppTest {
     @Test
     public void executeCommandZeroInitCreatesEmptyFloorAndResetsRobot() {
         resetAppState(3);
-        App.executeCommand("d", true);
-        App.executeCommand("m 1", true);
+        executor.executeCommand("d", true);
+        executor.executeCommand("m 1", true);
 
-        App.executeCommand("i 1", true);
+        executor.executeCommand("i 1", true);
 
-        String output = captureStdout(() -> App.executeCommand("i 0", true));
+        String output = captureStdout(() -> executor.executeCommand("i 0", true));
         assertTrue(output.contains("Invalid Command. The size must be a positive integer."));
 
         int[][] floor = getFloor();
@@ -282,10 +294,10 @@ public class AppTest {
     @Test
     public void executeCommandPrintsRobotState() {
         resetAppState(3);
-        App.executeCommand("d", true);
-        App.executeCommand("m 1", true);
+        executor.executeCommand("d", true);
+        executor.executeCommand("m 1", true);
 
-        String output = captureStdout(() -> App.executeCommand("c", true));
+        String output = captureStdout(() -> executor.executeCommand("c", true));
         assertTrue(output.contains("Position: 0, 1 - Pen: DOWN - Facing: NORTH"));
     }
 
@@ -293,10 +305,10 @@ public class AppTest {
     @Test
 public void executeCommandPrintRendersStars() {
     resetAppState(2);
-    App.executeCommand("d", true);
-    App.executeCommand("m 1", true);
+    executor.executeCommand("d", true);
+    executor.executeCommand("m 1", true);
 
-    String output = captureStdout(() -> App.executeCommand("p", true));
+    String output = captureStdout(() -> executor.executeCommand("p", true));
 
     
     long starCount = output.chars().filter(ch -> ch == '*').count();
@@ -326,7 +338,7 @@ public void executeCommandPrintRendersStars() {
     public void executeCommandQuitStopsProgram() {
         resetAppState(2);
 
-        String output = captureStdout(() -> App.executeCommand("q", true));
+        String output = captureStdout(() -> executor.executeCommand("q", true));
         assertFalse(getIsRunning());
         assertTrue(output.contains("Exiting Program. Goodbye!"));
     }
@@ -334,10 +346,10 @@ public void executeCommandPrintRendersStars() {
     @Test
     public void initializeCommandResetsGridAndRobot() {
         resetAppState(4);
-        App.executeCommand("d", true);
-        App.executeCommand("m 3", true);
+        executor.executeCommand("d", true);
+        executor.executeCommand("m 3", true);
 
-        App.executeCommand("i 2", true);
+        executor.executeCommand("i 2", true);
 
         int[][] floor = getFloor();
         assertEquals(2, floor.length);
@@ -357,7 +369,7 @@ public void executeCommandPrintRendersStars() {
     public void executeCommandDoesNotAddToHistoryWhenFlagFalse() {
         resetAppState(3);
 
-        App.executeCommand("d", false);
+        executor.executeCommand("d", false);
         Queue<String> history = getHistory();
         assertEquals(0, history.size());
     }
@@ -366,14 +378,14 @@ public void executeCommandPrintRendersStars() {
     public void historyReplaysCommandsAndPreservesQueue() {
         resetAppState(4);
 
-        App.executeCommand("d", true);
-        App.executeCommand("m 1", true);
-        App.executeCommand("r", true);
-        App.executeCommand("m 1", true);
+        executor.executeCommand("d", true);
+        executor.executeCommand("m 1", true);
+        executor.executeCommand("r", true);
+        executor.executeCommand("m 1", true);
 
         Queue<String> before = new ArrayDeque<>(getHistory());
 
-        String output = captureStdout(() -> App.executeCommand("h", true));
+        String output = captureStdout(() -> executor.executeCommand("h", true));
         assertTrue(output.contains("End of Command History."));
 
         Queue<String> after = getHistory();
@@ -393,14 +405,14 @@ public void executeCommandPrintRendersStars() {
     public void historyWhenEmptyStillPrintsMessage() {
         resetAppState(3);
 
-        String output = captureStdout(() -> App.executeCommand("h", true));
+        String output = captureStdout(() -> executor.executeCommand("h", true));
         assertTrue(output.contains("End of Command History."));
         assertEquals(0, getHistory().size());
     }
 
     @Test
     public void printMenuContainsAllCommands() {
-        String output = captureStdout(() -> App.printMenu());
+        String output = captureStdout(() -> controller.printMenu());
         
         // Verify that all menu items are present
         assertTrue(output.contains("Available Commands:"), 
@@ -432,13 +444,13 @@ public void executeCommandPrintRendersStars() {
         // Tests that validation prevents invalid commands from reaching the switch default case
         resetAppState(3);
         
-        String output1 = captureStdout(() -> App.executeCommand("x", true));
+        String output1 = captureStdout(() -> executor.executeCommand("x", true));
         assertTrue(output1.contains("Invalid Command. Please try again."));
         
-        String output2 = captureStdout(() -> App.executeCommand("xyz", true));
+        String output2 = captureStdout(() -> executor.executeCommand("xyz", true));
         assertTrue(output2.contains("Invalid Command. Please try again."));
         
-        String output3 = captureStdout(() -> App.executeCommand("123", true));
+        String output3 = captureStdout(() -> executor.executeCommand("123", true));
         assertTrue(output3.contains("Invalid Command. Please try again."));
         
         // Verify robot state unchanged
@@ -452,7 +464,7 @@ public void executeCommandPrintRendersStars() {
         // Tests that validation prevents negative moves from reaching the IllegalArgumentException catch
         resetAppState(3);
         
-        String output = captureStdout(() -> App.executeCommand("m -5", true));
+        String output = captureStdout(() -> executor.executeCommand("m -5", true));
         assertTrue(output.contains("Invalid Command. The distance must be a non-negative integer."));
         
         // Verify robot didn't move
@@ -466,7 +478,7 @@ public void executeCommandPrintRendersStars() {
         // Tests that validation prevents missing arguments from reaching ArrayIndexOutOfBoundsException catch
         resetAppState(3);
         
-        String output = captureStdout(() -> App.executeCommand("m", true));
+        String output = captureStdout(() -> executor.executeCommand("m", true));
         assertTrue(output.contains("Invalid Command. Incorrect number of arguments for this command."));
         
         // Verify robot didn't move
@@ -480,13 +492,13 @@ public void executeCommandPrintRendersStars() {
         // Tests validation of commands with extra arguments
         resetAppState(3);
         
-        String output1 = captureStdout(() -> App.executeCommand("m 5 10", true));
+        String output1 = captureStdout(() -> executor.executeCommand("m 5 10", true));
         assertTrue(output1.contains("Invalid Command. Too many arguments"));
         
-        String output2 = captureStdout(() -> App.executeCommand("u extra", true));
+        String output2 = captureStdout(() -> executor.executeCommand("u extra", true));
         assertTrue(output2.contains("Invalid Command. Too many arguments"));
         
-        String output3 = captureStdout(() -> App.executeCommand("d extra args", true));
+        String output3 = captureStdout(() -> executor.executeCommand("d extra args", true));
         assertTrue(output3.contains("Invalid Command. Too many arguments"));
     }
 
@@ -495,8 +507,8 @@ public void executeCommandPrintRendersStars() {
         // Verifies that robot.move() handles bounds gracefully without throwing ArrayIndexOutOfBoundsException
         resetAppState(3);
         
-        App.executeCommand("d", true);
-        App.executeCommand("m 100", true); // Try to move far beyond grid
+        executor.executeCommand("d", true);
+        executor.executeCommand("m 100", true); // Try to move far beyond grid
         
         Robot robot = getRobot();
         // Robot should stop at the edge (y=2 for a 3x3 grid)
@@ -520,11 +532,11 @@ public void executeCommandPrintRendersStars() {
             }
         };
         
-        setStaticField(App.class, "robot", throwingRobot);
+        setInstanceField(executor, "robot", throwingRobot);
         
         // This command is valid and will pass isValidCommand(), reaching the switch case "m"
         // The robot.move() call will throw IllegalArgumentException, caught at line 222
-        String output = captureStdout(() -> App.executeCommand("m 5", false));
+        String output = captureStdout(() -> executor.executeCommand("m 5", false));
         
         assertTrue(output.contains("Test exception from Robot.move()"), 
             "Should print the IllegalArgumentException message");
@@ -596,44 +608,48 @@ public void executeCommandPrintRendersStars() {
             "Default case should print 'Invalid Command. Please try again.'");
     }
 
-    private static void resetAppState(int size) {
-        App.initialize(size);
-        setStaticField(App.class, "commandHistory", new ArrayDeque<String>());
-        setStaticField(App.class, "isRunning", true);
+    private void resetAppState(int size) {
+        executor.initialize(size);
+        setInstanceField(executor, "commandHistory", new ArrayDeque<String>());
+        setInstanceField(executor, "isRunning", true);
     }
 
-    private static Robot getRobot() {
-        return (Robot) getStaticField(App.class, "robot");
+    private Robot getRobot() {
+        return (Robot) getInstanceField(executor, "robot");
     }
 
-    private static int[][] getFloor() {
-        return (int[][]) getStaticField(App.class, "floor");
+    private int[][] getFloor() {
+        return (int[][]) getInstanceField(executor, "floor");
     }
 
     @SuppressWarnings("unchecked")
-    private static Queue<String> getHistory() {
-        return (Queue<String>) getStaticField(App.class, "commandHistory");
+    private static Queue<String> getHistory(CommandExecutor executor) {
+        return (Queue<String>) getInstanceField(executor, "commandHistory");
     }
 
-    private static boolean getIsRunning() {
-        return (boolean) getStaticField(App.class, "isRunning");
+    private Queue<String> getHistory() {
+        return getHistory(executor);
     }
 
-    private static Object getStaticField(Class<?> clazz, String fieldName) {
+    private boolean getIsRunning() {
+        return (boolean) getInstanceField(executor, "isRunning");
+    }
+
+    private static Object getInstanceField(Object obj, String fieldName) {
         try {
-            Field field = clazz.getDeclaredField(fieldName);
+            Field field = obj.getClass().getDeclaredField(fieldName);
             field.setAccessible(true);
-            return field.get(null);
+            return field.get(obj);
         } catch (Exception e) {
             throw new RuntimeException("Failed to access " + fieldName, e);
         }
     }
 
-    private static void setStaticField(Class<?> clazz, String fieldName, Object value) {
+    private static void setInstanceField(Object obj, String fieldName, Object value) {
         try {
-            Field field = clazz.getDeclaredField(fieldName);
+            Field field = obj.getClass().getDeclaredField(fieldName);
             field.setAccessible(true);
-            field.set(null, value);
+            field.set(obj, value);
         } catch (Exception e) {
             throw new RuntimeException("Failed to set " + fieldName, e);
         }

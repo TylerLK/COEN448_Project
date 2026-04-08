@@ -66,7 +66,7 @@ public class SimulationController {
     /**
      * Prints the available commands menu.
      */
-    private void printMenu() {
+    public void printMenu() {
         System.out.println("\nAvailable Commands:");
         System.out.println("[U|u]      |  Pen Up");
         System.out.println("[D|d]      |  Pen Down");
