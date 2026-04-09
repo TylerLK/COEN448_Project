@@ -6,11 +6,12 @@
 
 ## System Architecture
 
-The project is structured as four collaborating classes:
+The project is structured as 5 collaborating classes:
 
 | Class | Responsibility |
 |-------|---------------|
 | `App` | Entry point — instantiates `SimulationController` and calls `run()` |
+| `Robot` | holds robot status, The orientation of the robot's pen and the direction the robot is facing |
 | `SimulationController` | Main program loop, floor-size prompt, menu display. Accepts an injectable `Scanner` via `SimulationController(CommandParser, Scanner)` |
 | `CommandParser` | Validates all user input via `isValidCommand(String)`. Tokenizes with `.trim().split("\\s+")` |
 | `CommandExecutor` | Holds robot state (`Robot`, `int[][] floor`, `Queue<String> commandHistory`, `boolean isRunning`). Executes validated commands |
