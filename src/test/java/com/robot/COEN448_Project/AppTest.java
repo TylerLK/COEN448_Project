@@ -1,6 +1,7 @@
 package com.robot.COEN448_Project;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -11,6 +12,12 @@ import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
 
 public class AppTest {
+
+    /** Instantiates App to cover the implicit default constructor reported uncovered by JaCoCo. */
+    @Test
+    public void appDefaultConstructorIsInstantiable() {
+        assertNotNull(new App());
+    }
 
     @Test
     public void mainDelegatesToSimulationAndExits() {
