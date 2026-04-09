@@ -1,6 +1,6 @@
 # Gap filling Report — COEN448 Robot Project
 
-**Scope:** Issues 1 & 2 from QA Team Feedback — analysed against the current three-class architecture (QATest.java excluded from scope)
+**Scope:** Issues 1 & 2 from QA Team Feedback — analysed against the current architecture (QATest.java excluded from scope)
 
 ---
 
