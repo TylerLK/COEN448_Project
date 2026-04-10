@@ -309,12 +309,193 @@ We need to write a test case in AppTest.java to test efficiently the printMenu()
 **Relevance:**
 The method needs to be fully tested to ensure sufficient test coverage.
 
-
 ---
+
 <p align="center"><em>End of prompt</em></p>
 
 ---
 
+### Class Abstractions
+
+Restructure the code from our main App.java class to separate the logic related to command parsing and execution logic, and the actual running of the program. The App class should only have the main method, and it should only be a maximum of 25 lines long. All other logic from the App class should be abstracted into methods and other classes.
+
+---
+
+<p align="center"><em>End of prompt</em></p>
+
+---
+
+### Regression Testing
+
+Context:
+ - Current code: App.java, CommandExecutor.java, CommandParser.java, Robot.java, SimulationController.java, AppTest.java, RobotTest.java 
+ - Constraint: Testing should focus on finding any bugs produced by the recent structural changes.
+
+Outcome:
+ - Produce testing files of the form "<Class Name>Test.java" for each of the classes in the Maven build Java project.
+ - Produce Result.md file that reveals gaps in the current tests, as well as remedies to these gaps.
+ - Produce Metrics.md file containing code metrics for the program code.
+
+Steps:
+ 1. Read the files App.java, CommandExecutor.java, CommandParser.java, Robot.java, SimulationController.java, AppTest.java, RobotTest.java in the Maven build project root.
+
+ 2. Regression Testing:
+   2.1 Update AppTest.java to contain any existing or new test cases for the App class.
+   2.2 Create CommandExecutorTest.java to contain any existing or new test cases for the CommandExecutor class.
+   2.3 Create CommandParserTest.java to contain any existing or new test cases for the CommandParser class.
+   2.4 Update RobotTest.java to contain any existing or new test cases for the Robot class.
+   2.5 Create SimulationControllerTest.java to contain any existing or new test cases for the SimulationController class.
+
+ 3. Move all deprecated test cases to a file called "Deprecated.java".  Comment out all the test functions in this file.
+
+ 4. Ensure enhanced test coverage, data flow testing, and mutation testing for all the classes. 
+
+ 5. In Result.md, list findings for testing gaps related to:
+   - Overall Test Coverage (Line, Statement, Decision, and Condition).
+   - Data-Flow Testing (LKW Framework: All-Defs, All-Uses, All-DU Pairs, and Antidecomposition)
+   - Mutation Testing (Test Case Sensitivity)
+   - Remedies for testing gaps.
+   - Any potential bugs uncovered through regression testing.
+
+ 6. In Metrics.md, an ordered list with the following metrics of the program code:
+   - Code Complexity with Cyclomatic Complexity per Function, #lines, #functions, #classes, and #variables.
+   - Minimum Test cases
+   - # Tests Retained
+   - # Tests Deprecated
+   - # Tests Added
+   - Which tests passed, failed, or threw exceptions
+
+Tools:
+ - JUnit5
+ - Maven
+ - JaCoCo
+ - SonarQube
+ - Pitest
+
+Audience:
+ - Developer implementing and testing the program code.
+ - QA Team validating the program code.
+
+Relevance:
+ - Comprehensive Regression Testing to enhance test coverage, data flow testing, and mutation testing related to the new program structure.
+
+Additional constraints:
+ - Keep current program code intact.
+ - Keep the current QATest.java file intact
+ - Do not create any files other than the ones specified.
+ - No deprecated test cases should be deleted.
+
+---
+
+<p align="center"><em>End of prompt</em></p>
+
+---
+
+### Improving Final Code Coverage and Test Robustness
+
+Context
+
+You are testing a Java-based robot simulation program that has recently been refactored from a single monolithic class (`App`) into three collaborating classes:
+
+- **`SimulationController`** — manages the main program loop, user input, and startup initialization. It accepts an injectable `Scanner` via a secondary constructor `SimulationController(CommandParser parser, Scanner scanner)`, making the loop testable without redirecting `System.in` globally.
+- **`CommandParser`** — handles all input validation logic via the public method `isValidCommand(String command)`. It tokenizes input using `.trim().split("\\s+")` (any whitespace sequence).
+- **`CommandExecutor`** — holds the robot state (`Robot`, `int[][] floor`, `Queue<String> commandHistory`, `boolean isRunning`) as instance fields and exposes `executeCommand(String command, boolean addToHistory)`, `initialize(int n)`, `quit()`, `history()`, and `print()`.
+
+The `Robot` class starts at position (0, 0), pen UP, facing NORTH. It moves on a 2D integer floor array. Movement stops silently at grid boundaries. Negative steps throw `IllegalArgumentException`.
+
+The existing test suite (`AppTest.java`, `RobotTest.java`) tests `CommandExecutor` and `CommandParser` in isolation but **never exercises `SimulationController.run()` or `requestInitialFloorSize()` end-to-end**. Additionally, several input validation edge cases related to numeric formatting and whitespace-only inputs are not covered.
+
+Two distinct gaps have been identified by an external QA team:
+
+**Gap Group 1 — Untested branches in `SimulationController`:**
+The initialization loop (`requestInitialFloorSize`) has four branches that are never reached by tests: valid input accepted immediately (A1), zero or negative integer rejected and looped (A2), non-integer input caught as `NumberFormatException` and looped (A3), and multiple successive invalid inputs before a valid one (A2+A3). The main command loop (`run`) has four additional untested aspects: the menu being printed once per iteration via `SHOULD_PRINT_MENU = true` (B1), history being seeded with `"I n"` immediately after initialization (B3), multiple sequential commands being processed with state persisting across iterations (B4), and the `scanner.close()` call being reached after `isRunning` becomes false (B5). Branch B2 (`SHOULD_PRINT_MENU = false`) is dead code and cannot be tested.
+
+**Gap Group 2 — Untested input validation edge cases in `CommandParser`:**
+The following inputs are not covered: integer overflow values (`"m 2147483648"`, `"i 2147483648"`), float-formatted numbers (`"m 3.5"`, `"i 4.0"`), scientific notation (`"m 1e5"`), hexadecimal notation (`"m 0x10"`), an unknown two-token command (`"x 5"`), special character commands (`"@"`, `"!"`, `"#5"`), whitespace-only variants (`"\t"`, `"\n"`), the undocumented accepted edge cases `"m -0"` (parses to 0, accepted) and `"m +5"` (parses to 5, accepted), and the cumulative robot state integrity after a sequence of consecutive invalid commands.
+
+Outcome
+
+Looking at the new test structure, generate the tests into the corresponding test file. For example, add tests related to CommandParser to CommandParserTest.java and so on. Just add them to the existing files. Don't modify existing tests. Add tests in the package `com.robot.COEN448_Project` that cover all of the following test cases:
+
+**Gap Group 1 — `SimulationController` loop tests (TC-ML-01 to TC-ML-08):**
+
+| Test ID | What to assert |
+|---------|---------------|
+| TC-ML-01 | Valid floor size entered on first try → no error message, program starts and quits cleanly |
+| TC-ML-02 | Zero entered then valid size → error `"N must be an integer greater than 0"` printed once, program runs |
+| TC-ML-03 | Negative integer entered then valid size → same error message, program runs |
+| TC-ML-04 | Non-integer `"abc"` entered, then valid size → error `"Please enter a whole number"` printed once |
+| TC-ML-05 | Four invalid inputs (`"0"`, `"abc"`, `"-1"`, `"3.5"`) then valid `"5"` → at least 4 error messages printed |
+| TC-ML-06 | After `run()` completes with input `"5\nq\n"` → `commandHistory` contains `"I 5"` as first entry |
+| TC-ML-07 | Three commands issued (`"u"`, `"d"`, `"q"`) → `"Available Commands:"` appears exactly 3 times in output |
+| TC-ML-08 | Commands `"d"`, `"m 3"`, `"r"`, `"m 2"`, `"q"` issued → robot ends at (2, 3), facing EAST, pen DOWN |
 
 
 
+**Gap Group 2 — `CommandParser` / `CommandExecutor` validation tests (TC-IV-01b to TC-IV-15):**
+
+| Test ID | Input | Assert |
+|---------|-------|--------|
+| TC-IV-01b | `"m  5"` | Accepted, robot moves 5 steps north |
+| TC-IV-02b | `"m\t5"` | Accepted, robot moves 5 steps north |
+| TC-IV-03b | `"  m   5  "` | Accepted, robot moves 5 steps north |
+| TC-IV-04 | `"m 2147483648"` | Rejected with distance error message, robot unmoved |
+| TC-IV-05 | `"i 2147483648"` | Rejected with size error message, floor unchanged |
+| TC-IV-06 | `"m 3.5"` | Rejected with distance error message |
+| TC-IV-07 | `"i 4.0"` | Rejected with size error message, floor unchanged |
+| TC-IV-08 | `"m 1e5"` | Rejected with distance error message |
+| TC-IV-09 | `"m -0"` | Accepted as 0-step move, robot unmoved, floor unmarked |
+| TC-IV-10 | `"m +5"` | Accepted, robot moves 5 steps north |
+| TC-IV-11 | `"x 5"` | Rejected with `"Invalid Command. Please try again."` |
+| TC-IV-12 | `"@"`, `"!"`, `"#5"` | Each rejected with `"Invalid Command. Please try again."` |
+| TC-IV-13 | `"m 0x10"` | Rejected with distance error message |
+| TC-IV-14 | `"\t"`, `"\n"` | Each rejected with `"Empty Command. Please try again."` |
+| TC-IV-15 | Sequence of 6 invalid commands | Robot remains at (0,0), pen UP, facing NORTH, zero floor marks |
+
+Steps
+
+To generate the tests, follow this derivation process:
+
+1. **For TC-ML-01 to TC-ML-08:** Use the injectable constructor `SimulationController(CommandParser parser, Scanner scanner)`. Build the `Scanner` from a `ByteArrayInputStream` wrapping the simulated input string. Capture `System.out` using a `ByteArrayOutputStream` during the `run()` call. After `run()` returns, inspect the captured output for expected messages and use Java reflection to read private instance fields (`commandHistory`, `robot`) from `CommandExecutor` to assert robot state and history contents.
+
+2. **For TC-IV-01b to TC-IV-03b:** Instantiate `CommandParser` and `CommandExecutor` directly (same pattern as `AppTest.java`). Call `executor.executeCommand(input, true)` and assert robot position moved to (0, 5) to confirm the command was accepted and executed.
+
+3. **For TC-IV-04 to TC-IV-15:** Instantiate `CommandParser` and `CommandExecutor` directly. Use the `captureStdout(Runnable)` helper to capture output. Assert the correct rejection message appears using `assertTrue(output.contains(...))`. For tests involving state integrity (TC-IV-05, TC-IV-07, TC-IV-15), also use reflection to verify floor size and robot position are unchanged.
+
+4. For TC-IV-09 (`"m -0"`), set pen DOWN before the move to ensure the floor would be marked if any movement occurred — then assert zero marks and zero displacement to prove the 0-step behaviour.
+
+5. For TC-IV-15, fire all 6 invalid commands in sequence without resetting the state between them, then assert the full robot state invariant.
+
+Tools
+
+- **Test framework:** JUnit 5 (`org.junit.jupiter.api.Test`, `@BeforeEach`, assertions from `org.junit.jupiter.api.Assertions`)
+- **Input simulation:** `java.io.ByteArrayInputStream` + `java.util.Scanner` injected via `SimulationController(CommandParser, Scanner)`
+- **Output capture:** `java.io.ByteArrayOutputStream` + `java.io.PrintStream` redirecting `System.setOut`
+- **State inspection:** `java.lang.reflect.Field` with `setAccessible(true)` — same pattern as `AppTest.java` — to read private fields `robot`, `floor`, `commandHistory`, `isRunning` from `CommandExecutor.`
+- **No mocking framework required** — the injectable constructor and reflection are sufficient
+
+Audience
+
+The generated tests will be added to the existing test suite (`AppTest.java`, `RobotTest.java`) in the Maven project at `src/test/java/com/robot/COEN448_Project/`. They are intended for:
+
+- The development team, to verify that the refactored `SimulationController` behaves correctly end-to-end
+- The project's CI pipeline (Maven Surefire), which runs all tests on each commit
+- The external QA team, as evidence that all identified gaps have been addressed
+
+The test class must be self-contained, use `@BeforeEach` to reset state between tests, and follow the naming conventions of `AppTest.java` (camelCase, descriptive method names).
+
+Relevance
+
+The gaps being addressed represent the two most critical weaknesses flagged by the external QA team:
+
+1. **The `SimulationController` loop has never been tested as a unit.** If the initialization validation or command loop regresses — for example, after a future refactor of the Scanner injection or the history seeding logic — there is currently no test that would catch it. A regression here would mean the entire program entry point is broken with no automated signal.
+
+2. **Input validation edge cases are not tested.** The `\\s+` tokenization fix was a silent behaviour change: inputs like `"m  5"` were previously rejected and are now accepted. Without tests locking in this new behaviour, it could be silently reverted. Similarly, overflow values, float inputs, and hex notation represent realistic user mistakes that should be documented and guarded by regression tests.
+
+Failing to cover these gaps means the test suite provides false confidence: the program could break at startup or mishandle user input without any test failing.
+
+---
+
+<p align="center"><em>End of prompt</em></p>
+
+---
