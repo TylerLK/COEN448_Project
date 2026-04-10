@@ -360,9 +360,9 @@ Steps:
  6. In Metrics.md, an ordered list with the following metrics of the program code:
    - Code Complexity with Cyclomatic Complexity per Function, #lines, #functions, #classes, and #variables.
    - Minimum Test cases
-   - # Tests Retained
-   - # Tests Deprecated
-   - # Tests Added
+   - Number of Tests Retained
+   - Number of Tests Deprecated
+   - Number of Tests Added
    - Which tests passed, failed, or threw exceptions
 
 Tools:
